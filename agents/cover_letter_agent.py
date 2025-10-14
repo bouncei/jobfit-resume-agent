@@ -215,4 +215,178 @@ Please generate a professional cover letter for this candidate applying to the a
             return False, "Cover letter should have multiple paragraphs"
         
         return True, "Cover letter validation passed"
+    
+    def analyze_company_context(self, job_description: str) -> dict:
+        """
+        Analyze company context from job description for personalized cover letters
+        
+        Args:
+            job_description: The job description text
+            
+        Returns:
+            dict: Company context analysis
+        """
+        job_lower = job_description.lower()
+        
+        context = {
+            'company_size': 'unknown',
+            'industry': 'unknown',
+            'work_style': 'unknown',
+            'tech_stack': [],
+            'company_stage': 'unknown',
+            'culture_indicators': []
+        }
+        
+        # Determine company size
+        if any(term in job_lower for term in ['startup', 'early-stage', 'founding']):
+            context['company_size'] = 'startup'
+        elif any(term in job_lower for term in ['enterprise', 'fortune', 'large-scale']):
+            context['company_size'] = 'enterprise'
+        elif any(term in job_lower for term in ['mid-size', 'growing', 'scale']):
+            context['company_size'] = 'mid-size'
+        
+        # Determine industry
+        industry_keywords = {
+            'fintech': ['fintech', 'financial', 'banking', 'payments'],
+            'healthcare': ['healthcare', 'medical', 'health', 'patient'],
+            'e-commerce': ['e-commerce', 'retail', 'marketplace', 'shopping'],
+            'saas': ['saas', 'software as a service', 'b2b', 'platform'],
+            'ai/ml': ['ai', 'machine learning', 'artificial intelligence', 'data science']
+        }
+        
+        for industry, keywords in industry_keywords.items():
+            if any(keyword in job_lower for keyword in keywords):
+                context['industry'] = industry
+                break
+        
+        # Determine work style
+        if any(term in job_lower for term in ['remote', 'distributed', 'work from home']):
+            context['work_style'] = 'remote'
+        elif any(term in job_lower for term in ['hybrid', 'flexible']):
+            context['work_style'] = 'hybrid'
+        elif any(term in job_lower for term in ['on-site', 'office', 'in-person']):
+            context['work_style'] = 'on-site'
+        
+        # Extract tech stack
+        tech_terms = [
+            'react', 'python', 'javascript', 'typescript', 'node.js', 'aws',
+            'docker', 'kubernetes', 'postgresql', 'mongodb', 'fastapi'
+        ]
+        
+        for term in tech_terms:
+            if term in job_lower:
+                context['tech_stack'].append(term)
+        
+        # Determine company stage
+        if any(term in job_lower for term in ['series a', 'series b', 'funding', 'growth']):
+            context['company_stage'] = 'growth'
+        elif any(term in job_lower for term in ['established', 'mature', 'leader']):
+            context['company_stage'] = 'established'
+        elif any(term in job_lower for term in ['startup', 'early', 'seed']):
+            context['company_stage'] = 'early'
+        
+        # Extract culture indicators
+        culture_terms = [
+            'innovation', 'collaboration', 'diversity', 'inclusion', 'agile',
+            'fast-paced', 'learning', 'growth', 'impact', 'mission-driven'
+        ]
+        
+        for term in culture_terms:
+            if term in job_lower:
+                context['culture_indicators'].append(term)
+        
+        return context
+    
+    def generate_personalized_opening(self, company_context: dict, job_description: str) -> str:
+        """
+        Generate a personalized opening line based on company context
+        
+        Args:
+            company_context: Company analysis results
+            job_description: The job description
+            
+        Returns:
+            str: Personalized opening suggestion
+        """
+        openings = []
+        
+        # Industry-specific openings
+        if company_context['industry'] == 'fintech':
+            openings.append("The intersection of technology and finance has always fascinated me")
+        elif company_context['industry'] == 'healthcare':
+            openings.append("Technology's potential to transform healthcare outcomes drives my passion")
+        elif company_context['industry'] == 'ai/ml':
+            openings.append("The rapid evolution of AI and machine learning presents unprecedented opportunities")
+        
+        # Company size-specific openings
+        if company_context['company_size'] == 'startup':
+            openings.append("The opportunity to shape a product from its early stages while solving real-world problems")
+        elif company_context['company_size'] == 'enterprise':
+            openings.append("The challenge of building scalable solutions that impact millions of users")
+        
+        # Culture-specific openings
+        if 'innovation' in company_context['culture_indicators']:
+            openings.append("Your commitment to innovation and cutting-edge technology aligns perfectly with my career goals")
+        
+        return openings[0] if openings else "I am excited about the opportunity to contribute to your team"
+    
+    def extract_key_requirements(self, job_description: str) -> list:
+        """
+        Extract the most important requirements from job description
+        
+        Args:
+            job_description: The job description text
+            
+        Returns:
+            list: Key requirements in order of importance
+        """
+        job_lower = job_description.lower()
+        requirements = []
+        
+        # Look for explicit requirements sections
+        req_indicators = [
+            'required', 'must have', 'essential', 'minimum', 'qualifications',
+            'experience', 'skills', 'responsibilities'
+        ]
+        
+        lines = job_description.split('\n')
+        in_requirements = False
+        
+        for line in lines:
+            line_lower = line.lower()
+            
+            # Check if we're entering a requirements section
+            if any(indicator in line_lower for indicator in req_indicators):
+                in_requirements = True
+                continue
+            
+            # Extract bullet points or numbered items
+            if in_requirements and (line.strip().startswith('•') or 
+                                   line.strip().startswith('-') or 
+                                   line.strip().startswith('*') or
+                                   any(char.isdigit() for char in line[:3])):
+                req_text = line.strip().lstrip('•-*0123456789. ')
+                if len(req_text) > 10:  # Filter out very short items
+                    requirements.append(req_text)
+            
+            # Stop if we hit another section
+            elif in_requirements and line.strip() and not line.startswith(' '):
+                if any(word in line_lower for word in ['benefits', 'about', 'company', 'culture']):
+                    break
+        
+        # If no structured requirements found, extract from common patterns
+        if not requirements:
+            tech_patterns = [
+                'experience with', 'proficiency in', 'knowledge of', 'expertise in',
+                'familiar with', 'working with', 'using'
+            ]
+            
+            for line in lines:
+                line_lower = line.lower()
+                for pattern in tech_patterns:
+                    if pattern in line_lower:
+                        requirements.append(line.strip())
+                        break
+        
+        return requirements[:5]  # Return top 5 most important
 
