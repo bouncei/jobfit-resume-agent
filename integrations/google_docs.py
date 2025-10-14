@@ -188,13 +188,15 @@ class GoogleDocsClient:
                             'endIndex': total_length
                         },
                         'textStyle': {
-                            'fontFamily': 'Arial',
+                            'weightedFontFamily': {
+                                'fontFamily': 'Arial'
+                            },
                             'fontSize': {
                                 'magnitude': 11,
                                 'unit': 'PT'
                             }
                         },
-                        'fields': 'fontFamily,fontSize'
+                        'fields': 'weightedFontFamily,fontSize'
                     }
                 },
                 # Set line spacing

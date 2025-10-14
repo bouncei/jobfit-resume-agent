@@ -12,7 +12,7 @@ class Config:
     
     # OpenAI Configuration
     OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
-    OPENAI_MODEL = os.getenv('OPENAI_MODEL', 'gpt-4-turbo')
+    OPENAI_MODEL = os.getenv('OPENAI_MODEL', 'gpt-4o-mini')
     
     # Google Docs Configuration
     GOOGLE_CREDENTIALS_PATH = os.getenv('GOOGLE_CREDENTIALS_PATH', 'credentials.json')

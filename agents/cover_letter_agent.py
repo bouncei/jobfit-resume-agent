@@ -24,7 +24,8 @@ Guidelines:
 - Demonstrate understanding of the company's needs and how the candidate can address them
 - Show personality while maintaining professional tone
 - Close with a clear call to action expressing interest in an interview
-- Keep to 3-4 paragraphs with appropriate business letter structure
+- Keep to exactly 3-4 paragraphs, be concise and impactful
+- Maximum 250-300 words total
 - Use plain text format without markdown or special formatting
 - Make it personal and specific to this role, not generic
 - Include specific examples and achievements when possible
@@ -158,7 +159,7 @@ Please generate a professional cover letter for this candidate applying to the a
             return False, "Cover letter output is too short"
         
         # Check maximum length (should be concise)
-        if len(cover_letter_text.strip()) > 2000:
+        if len(cover_letter_text.strip()) > 3000:
             return False, "Cover letter output is too long"
         
         # Check for basic cover letter elements
