@@ -149,12 +149,13 @@ class GoogleDocsClient:
         except Exception as e:
             raise Exception(f"Unexpected error inserting text: {str(e)}")
     
-    def format_document(self, document_id: str) -> bool:
+    def format_document(self, document_id: str, resume_text: str) -> bool:
         """
-        Apply basic formatting to the document
+        Apply professional formatting to the document including bold headers, spacing, and hyperlinks
         
         Args:
             document_id: The ID of the document
+            resume_text: The resume text to analyze for formatting
             
         Returns:
             bool: True if successful
@@ -163,7 +164,7 @@ class GoogleDocsClient:
             raise Exception("Google Docs service not initialized. Please authenticate first.")
         
         try:
-            # Get document content to determine text length
+            # Get document content
             doc = self.service.documents().get(documentId=document_id).execute()
             content = doc.get('body', {}).get('content', [])
             
@@ -178,9 +179,12 @@ class GoogleDocsClient:
             if total_length <= 1:
                 return True  # No content to format
             
-            # Apply basic formatting
-            requests = [
-                # Set font to a professional font
+            # Find headers, links, and formatting positions
+            formatting_requests = []
+            
+            # Apply base formatting first
+            formatting_requests.extend([
+                # Set font to a professional font for entire document
                 {
                     'updateTextStyle': {
                         'range': {
@@ -199,7 +203,7 @@ class GoogleDocsClient:
                         'fields': 'weightedFontFamily,fontSize'
                     }
                 },
-                # Set line spacing
+                # Set default line spacing
                 {
                     'updateParagraphStyle': {
                         'range': {
@@ -207,26 +211,107 @@ class GoogleDocsClient:
                             'endIndex': total_length
                         },
                         'paragraphStyle': {
-                            'lineSpacing': 110,
+                            'lineSpacing': 115,
                             'spaceAbove': {
-                                'magnitude': 0,
+                                'magnitude': 3,
                                 'unit': 'PT'
                             },
                             'spaceBelow': {
-                                'magnitude': 6,
+                                'magnitude': 3,
                                 'unit': 'PT'
                             }
                         },
                         'fields': 'lineSpacing,spaceAbove,spaceBelow'
                     }
                 }
-            ]
+            ])
             
-            # Execute formatting requests
-            self.service.documents().batchUpdate(
-                documentId=document_id,
-                body={'requests': requests}
-            ).execute()
+            # Find and format headers, links, and special sections
+            lines = resume_text.split('\n')
+            current_pos = 1
+            
+            for line in lines:
+                line_length = len(line)
+                
+                if line_length > 0:
+                    # Check if this is a header (all caps sections)
+                    if self._is_header_line(line):
+                        # Add extra spacing after headers (no bold formatting)
+                        formatting_requests.append({
+                            'updateParagraphStyle': {
+                                'range': {
+                                    'startIndex': current_pos,
+                                    'endIndex': current_pos + line_length
+                                },
+                                'paragraphStyle': {
+                                    'spaceBelow': {
+                                        'magnitude': 8,
+                                        'unit': 'PT'
+                                    }
+                                },
+                                'fields': 'spaceBelow'
+                            }
+                        })
+                    
+                    # Check if this is the name (first line)
+                    elif current_pos == 1:
+                        # Center align the name (no bold formatting)
+                        formatting_requests.append({
+                            'updateParagraphStyle': {
+                                'range': {
+                                    'startIndex': current_pos,
+                                    'endIndex': current_pos + line_length
+                                },
+                                'paragraphStyle': {
+                                    'alignment': 'CENTER',
+                                    'spaceBelow': {
+                                        'magnitude': 12,
+                                        'unit': 'PT'
+                                    }
+                                },
+                                'fields': 'alignment,spaceBelow'
+                            }
+                        })
+                    
+                    # Check for URLs and create hyperlinks
+                    url_positions = self._find_urls_in_line(line)
+                    for url_start, url_end, url in url_positions:
+                        formatting_requests.append({
+                            'updateTextStyle': {
+                                'range': {
+                                    'startIndex': current_pos + url_start,
+                                    'endIndex': current_pos + url_end
+                                },
+                                'textStyle': {
+                                    'link': {
+                                        'url': url
+                                    },
+                                    'foregroundColor': {
+                                        'color': {
+                                            'rgbColor': {
+                                                'red': 0.0,
+                                                'green': 0.0,
+                                                'blue': 1.0
+                                            }
+                                        }
+                                    },
+                                    'underline': True
+                                },
+                                'fields': 'link,foregroundColor,underline'
+                            }
+                        })
+                
+                # Move to next line (including newline character)
+                current_pos += line_length + 1
+            
+            # Execute all formatting requests in batches (Google Docs has request limits)
+            batch_size = 50
+            for i in range(0, len(formatting_requests), batch_size):
+                batch = formatting_requests[i:i + batch_size]
+                self.service.documents().batchUpdate(
+                    documentId=document_id,
+                    body={'requests': batch}
+                ).execute()
             
             return True
         
@@ -234,6 +319,86 @@ class GoogleDocsClient:
             # Formatting is optional, so we don't raise an exception
             print(f"Warning: Could not apply formatting to document: {str(e)}")
             return False
+    
+    def _is_header_line(self, line: str) -> bool:
+        """
+        Determine if a line is a header (section title)
+        
+        Args:
+            line: The line to check
+            
+        Returns:
+            bool: True if this is a header line
+        """
+        line = line.strip()
+        if not line:
+            return False
+        
+        # Common resume section headers
+        headers = [
+            'PROFESSIONAL SUMMARY', 'TECHNICAL SKILLS', 'PROFESSIONAL EXPERIENCE',
+            'EDUCATION', 'PROJECTS', 'TECHNICAL PROJECTS', 'CERTIFICATIONS',
+            'CERTIFICATIONS & ACHIEVEMENTS', 'ADDITIONAL INFORMATION', 'SKILLS',
+            'EXPERIENCE', 'SUMMARY', 'OBJECTIVE', 'ACHIEVEMENTS', 'AWARDS'
+        ]
+        
+        # Check if line matches common headers
+        line_upper = line.upper()
+        for header in headers:
+            if header in line_upper:
+                return True
+        
+        # Check if line is all uppercase and reasonable length for a header
+        if line.isupper() and 3 <= len(line) <= 50 and not line.startswith('•'):
+            return True
+        
+        return False
+    
+    def _find_urls_in_line(self, line: str) -> list:
+        """
+        Find URLs in a line of text
+        
+        Args:
+            line: The line to search
+            
+        Returns:
+            list: List of tuples (start_pos, end_pos, url)
+        """
+        import re
+        
+        urls = []
+        
+        # Pattern for URLs (http/https, email, linkedin, github, websites)
+        url_patterns = [
+            r'https?://[^\s]+',
+            r'www\.[^\s]+',
+            r'[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}',
+            r'linkedin\.com/in/[^\s]+',
+            r'github\.com/[^\s]+',
+            r'[a-zA-Z0-9.-]+\.(com|org|net|edu|io|tech|dev)[^\s]*'
+        ]
+        
+        for pattern in url_patterns:
+            matches = re.finditer(pattern, line, re.IGNORECASE)
+            for match in matches:
+                url = match.group()
+                start_pos = match.start()
+                end_pos = match.end()
+                
+                # Ensure URL has proper protocol
+                if not url.startswith(('http://', 'https://')):
+                    if '@' in url:
+                        url = f'mailto:{url}'
+                    elif url.startswith('www.'):
+                        url = f'https://{url}'
+                    elif any(domain in url.lower() for domain in ['linkedin.com', 'github.com']):
+                        url = f'https://{url}'
+                    elif '.' in url and not url.startswith('mailto:'):
+                        url = f'https://{url}'
+                
+                urls.append((start_pos, end_pos, url))
+        
+        return urls
     
     def create_resume_document(self, title: str, resume_text: str) -> Dict[str, Any]:
         """
@@ -256,8 +421,8 @@ class GoogleDocsClient:
             # Insert the resume text
             self.insert_text(doc_info['document_id'], resume_text)
             
-            # Apply basic formatting
-            self.format_document(doc_info['document_id'])
+            # Apply professional formatting with headers, spacing, and hyperlinks
+            self.format_document(doc_info['document_id'], resume_text)
             
             return doc_info
         

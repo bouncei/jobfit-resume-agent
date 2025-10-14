@@ -2,7 +2,7 @@ JOSHUA INYANG
 +234 905 518 8600 | joshuainyang255@gmail.com | linkedin.com/in/joshua-inyang-2753841b7 | github.com/bouncei | www.bouncei.tech
 
 PROFESSIONAL SUMMARY
-Software Engineer with 5+ years of experience architecting, developing, and deploying scalable, production-ready applications across mobile, full-stack, and AI domains. Proven expertise in leading end-to-end development of high-impact products using TypeScript, React Native, Next.js, Node.js, Python, and FastAPI. Skilled in integrating Large Language Models (LLMs), real-time data pipelines, and cloud platforms (AWS, GCP) with modern databases (PostgreSQL, MongoDB, Elasticsearch) and state management solutions. Strong track record of driving performance optimization, mentoring teams, and delivering intelligent, user-centric solutions that scale.
+Software Engineer with 6+ years of experience architecting, developing, and deploying scalable, production-ready applications across mobile, full-stack, and AI domains. Proven expertise in leading end-to-end development of high-impact products using TypeScript, React Native, Next.js, Node.js, Python, and FastAPI. Skilled in integrating Large Language Models (LLMs), real-time data pipelines, and cloud platforms (AWS, GCP) with modern databases (PostgreSQL, MongoDB, Elasticsearch) and state management solutions. Strong track record of driving performance optimization, mentoring teams, and delivering intelligent, user-centric solutions that scale.
 
 TECHNICAL SKILLS
 • Programming Languages: TypeScript, Python, JavaScript, SQL
@@ -54,16 +54,7 @@ Bachelor of Science in Statistics | Bayero University, Kano | Nigeria | Septembe
 Computer Science Certification | Harvard University | Cambridge, MA | September 2020 - December 2020
 • Completed advanced coursework in computer science fundamentals and software engineering principles
 
-TECHNICAL PROJECTS
-Sales Parrot AI Platform | TypeScript, Python, FastAPI, PostgreSQL, Weaviate, Elasticsearch | 2025
-• Built comprehensive AI-powered sales automation platform with LLM integration and semantic search capabilities
-• Implemented data pipelines processing 1000+ leads with 99% accuracy and automated email campaign management
-• Achieved 40% improvement in lead conversion rates through intelligent scoring and personalized outreach
 
-Yarn Music Application | React Native, TypeScript, Node.js, Supabase | 2022-2025
-• Developed mobile-first music platform with Spotify API integration and AI-powered songwriting assistant
-• Implemented real-time features and subculture-based content feeds, increasing user engagement by 60%
-• Built scalable backend architecture supporting thousands of concurrent users
 
 
 ADDITIONAL INFORMATION
