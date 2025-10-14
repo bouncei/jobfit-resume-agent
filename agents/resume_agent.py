@@ -19,18 +19,66 @@ class ResumeAgent:
         # Define the resume refinement prompt template
         self.system_prompt = """You are an expert resume writer and career coach specializing in tailoring resumes to specific job descriptions.
 
-Your task is to refine the provided resume to perfectly match the job description while maintaining accuracy and relevance.
+Your task is to refine the provided resume to perfectly match the job description while maintaining accuracy and the candidate's professional identity.
+
+CRITICAL PRESERVATION RULES - DO NOT MODIFY:
+- Keep ALL educational details exactly as written (degrees, institutions, dates, coursework, GPA, honors)
+- Preserve ALL job titles, company names, locations, and employment dates exactly as stated
+- Maintain the candidate's level of professional seniority (Senior, Lead, Founding, etc.)
+- Keep the stated years of experience (5+ years) - never reduce experience level
+- Do not change any factual information about roles, companies, or achievements
+
+WHAT YOU CAN OPTIMIZE:
+- Reorder and emphasize bullet points under each role by relevance to the target job
+- Enhance technical skills section by highlighting relevant technologies
+- Adjust professional summary to emphasize skills most relevant to the job
+- Use keywords from the job description naturally in bullet point descriptions
+- Improve action verbs and quantifiable achievements in existing bullet points
+- Reorder sections to prioritize most relevant content for the role
+
+ADVANCED OPTIMIZATION STRATEGIES:
+
+KEYWORD & ATS OPTIMIZATION:
+- KEYWORD DENSITY: Ensure 8-12 relevant keywords from job description appear naturally throughout
+- ATS OPTIMIZATION: Use exact keyword phrases from job posting (e.g., "React Native" not "React-Native")
+- SYNONYM INTEGRATION: Include both technical terms and business language (e.g., "ML" and "Machine Learning")
+- SKILL VARIATIONS: Use multiple forms of same skill (e.g., "JavaScript", "JS", "ECMAScript")
+- ACRONYM EXPANSION: Include both acronyms and full terms (e.g., "API" and "Application Programming Interface")
+
+CONTENT INTELLIGENCE:
+- IMPACT QUANTIFICATION: Emphasize metrics that align with job requirements (performance, scale, efficiency)
+- RELEVANCE SCORING: Rank experiences by direct relevance to job requirements (1-10 scale)
+- SKILL PRIORITIZATION: List most relevant technical skills first in each category
+- ACHIEVEMENT AMPLIFICATION: Expand on achievements that directly match job requirements
+- CONTEXT BRIDGING: Connect seemingly unrelated experience to job requirements through transferable skills
+
+INDUSTRY & ROLE ADAPTATION:
+- INDUSTRY ALIGNMENT: Adjust technical terminology to match company's tech stack and industry
+- ROLE-SPECIFIC FOCUS: For senior roles, emphasize leadership; for technical roles, emphasize implementation
+- COMPANY SIZE MATCHING: Highlight startup experience for startups, enterprise experience for large companies
+- TECHNOLOGY STACK ALIGNMENT: Prioritize technologies mentioned in job description
+- METHODOLOGY MATCHING: Emphasize Agile/Scrum if mentioned, DevOps practices, etc.
+
+STRATEGIC POSITIONING:
+- REMOTE WORK INDICATORS: Emphasize distributed team collaboration if job is remote
+- GROWTH METRICS: Highlight scalability achievements if company is scaling (users, performance, team size)
+- PROBLEM-SOLUTION MAPPING: Frame experiences as solutions to problems the company likely faces
+- COMPETITIVE ADVANTAGE: Highlight unique combinations of skills that set candidate apart
+- FUTURE-READY SKILLS: Emphasize emerging technologies and forward-thinking approaches
+
+PSYCHOLOGICAL OPTIMIZATION:
+- CONFIDENCE INDICATORS: Use strong action verbs that convey leadership and ownership
+- PROGRESSION NARRATIVE: Show clear career growth and increasing responsibility
+- INNOVATION EMPHASIS: Highlight creative problem-solving and innovative approaches
+- COLLABORATION SIGNALS: Balance individual achievements with team collaboration
+- LEARNING AGILITY: Demonstrate continuous learning and adaptation to new technologies
 
 Guidelines:
-- Highlight skills and experiences that align with job requirements
-- Reorder bullet points by relevance to the role
-- Use keywords from the job description naturally throughout the resume
-- Keep to one page if possible, professional format
-- Maintain truthfulness - do not add false experiences or skills
+- Maintain truthfulness - enhance existing content, never fabricate
 - Format as plain text without markdown or special formatting
 - Ensure the resume flows naturally and reads professionally
-- Prioritize the most relevant experiences and skills for this specific role
-- Use action verbs and quantifiable achievements where possible
+- Keep professional tone and structure intact
+- Preserve all quantifiable metrics and achievements exactly as stated
 
 Output only the refined resume text, no explanations or additional commentary."""
 
@@ -138,12 +186,13 @@ Please refine this resume to be perfectly tailored for the above job description
         
         return cleaned_resume
     
-    def validate_resume_output(self, resume_text: str) -> tuple[bool, str]:
+    def validate_resume_output(self, resume_text: str, base_resume: str = None) -> tuple[bool, str]:
         """
-        Validate the refined resume output
+        Validate the refined resume output and ensure critical elements are preserved
         
         Args:
             resume_text: The refined resume text
+            base_resume: The original base resume for comparison
             
         Returns:
             tuple[bool, str]: (is_valid, error_message)
@@ -164,5 +213,141 @@ Please refine this resume to be perfectly tailored for the above job description
         if len(missing_sections) > 1:
             return False, f"Resume missing important sections: {', '.join(missing_sections)}"
         
+        # If base resume is provided, validate critical preservation rules
+        if base_resume:
+            base_lower = base_resume.lower()
+            refined_lower = resume_text.lower()
+            
+            # Check that key educational institutions are preserved
+            educational_keywords = ['bayero university', 'harvard university', 'bachelor', 'statistics', 'computer science']
+            for keyword in educational_keywords:
+                if keyword in base_lower and keyword not in refined_lower:
+                    return False, f"Educational detail '{keyword}' was removed from resume"
+            
+            # Check that company names are preserved
+            company_names = ['thinknodes', 'house of sounds', 'codelabprojects', 'twen']
+            for company in company_names:
+                if company in base_lower and company not in refined_lower:
+                    return False, f"Company name '{company}' was removed from resume"
+            
+            # Check that seniority levels are preserved
+            seniority_terms = ['founding', 'senior', '5+ years']
+            for term in seniority_terms:
+                if term in base_lower and term not in refined_lower:
+                    return False, f"Professional seniority indicator '{term}' was removed from resume"
+            
+            # Check that key job titles are preserved
+            job_titles = ['founding fullstack engineer', 'senior fullstack engineer', 'mobile engineer', 'software engineer']
+            preserved_titles = 0
+            for title in job_titles:
+                if title in base_lower and title in refined_lower:
+                    preserved_titles += 1
+            
+            if preserved_titles < 3:  # At least 3 out of 4 titles should be preserved
+                return False, "Critical job titles were modified - please preserve exact job titles"
+        
         return True, "Resume validation passed"
+    
+    def extract_job_keywords(self, job_description: str) -> dict:
+        """
+        Extract and categorize keywords from job description for optimization
+        
+        Args:
+            job_description: The job description text
+            
+        Returns:
+            dict: Categorized keywords for optimization
+        """
+        job_lower = job_description.lower()
+        
+        # Technical skills keywords
+        tech_keywords = []
+        tech_terms = [
+            'python', 'javascript', 'typescript', 'react', 'node.js', 'fastapi',
+            'aws', 'gcp', 'docker', 'kubernetes', 'postgresql', 'mongodb',
+            'machine learning', 'ai', 'llm', 'api', 'microservices', 'agile'
+        ]
+        
+        for term in tech_terms:
+            if term in job_lower:
+                tech_keywords.append(term)
+        
+        # Soft skills keywords
+        soft_keywords = []
+        soft_terms = [
+            'leadership', 'collaboration', 'communication', 'problem-solving',
+            'innovation', 'mentoring', 'cross-functional', 'strategic'
+        ]
+        
+        for term in soft_terms:
+            if term in job_lower:
+                soft_keywords.append(term)
+        
+        # Industry keywords
+        industry_keywords = []
+        industry_terms = [
+            'startup', 'enterprise', 'saas', 'fintech', 'healthcare', 'e-commerce',
+            'mobile', 'web', 'cloud', 'data', 'analytics', 'automation'
+        ]
+        
+        for term in industry_terms:
+            if term in job_lower:
+                industry_keywords.append(term)
+        
+        return {
+            'technical': tech_keywords,
+            'soft_skills': soft_keywords,
+            'industry': industry_keywords,
+            'total_count': len(tech_keywords) + len(soft_keywords) + len(industry_keywords)
+        }
+    
+    def analyze_resume_match(self, resume_text: str, job_description: str) -> dict:
+        """
+        Analyze how well the resume matches the job description
+        
+        Args:
+            resume_text: The resume text
+            job_description: The job description
+            
+        Returns:
+            dict: Match analysis results
+        """
+        job_keywords = self.extract_job_keywords(job_description)
+        resume_lower = resume_text.lower()
+        
+        matches = {
+            'technical': 0,
+            'soft_skills': 0,
+            'industry': 0,
+            'missing_keywords': []
+        }
+        
+        # Check technical keyword matches
+        for keyword in job_keywords['technical']:
+            if keyword in resume_lower:
+                matches['technical'] += 1
+            else:
+                matches['missing_keywords'].append(keyword)
+        
+        # Check soft skills matches
+        for keyword in job_keywords['soft_skills']:
+            if keyword in resume_lower:
+                matches['soft_skills'] += 1
+            else:
+                matches['missing_keywords'].append(keyword)
+        
+        # Check industry matches
+        for keyword in job_keywords['industry']:
+            if keyword in resume_lower:
+                matches['industry'] += 1
+            else:
+                matches['missing_keywords'].append(keyword)
+        
+        total_matches = matches['technical'] + matches['soft_skills'] + matches['industry']
+        total_possible = job_keywords['total_count']
+        
+        matches['match_percentage'] = (total_matches / total_possible * 100) if total_possible > 0 else 0
+        matches['optimization_score'] = min(100, matches['match_percentage'] + 10)  # Bonus for good structure
+        
+        return matches
 

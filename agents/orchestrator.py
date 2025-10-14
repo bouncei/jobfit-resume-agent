@@ -57,8 +57,11 @@ class ResumeAgentOrchestrator:
             
             refined_resume = self.resume_agent.refine_resume(job_description)
             
-            # Validate resume output
-            is_valid, error_msg = self.resume_agent.validate_resume_output(refined_resume)
+            # Load base resume for validation comparison
+            base_resume = self.resume_agent.load_base_resume()
+            
+            # Validate resume output with base resume comparison
+            is_valid, error_msg = self.resume_agent.validate_resume_output(refined_resume, base_resume)
             if not is_valid:
                 raise ValueError(f"Resume validation failed: {error_msg}")
             

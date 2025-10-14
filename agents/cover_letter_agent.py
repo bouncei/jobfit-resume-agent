@@ -30,6 +30,43 @@ Guidelines:
 - Make it personal and specific to this role, not generic
 - Include specific examples and achievements when possible
 
+ADVANCED COVER LETTER STRATEGIES:
+
+OPENING IMPACT:
+- ATTENTION GRABBER: Start with a compelling statement about the company's mission, recent news, or industry challenge
+- PERSONAL CONNECTION: Reference specific company values, projects, or initiatives that resonate with you
+- VALUE PROPOSITION: Lead with your unique value and how it solves their specific needs
+- INDUSTRY INSIGHT: Demonstrate knowledge of industry trends and how you can contribute to their success
+- MUTUAL BENEFIT: Frame the opportunity as mutually beneficial rather than just seeking employment
+
+CONTENT SOPHISTICATION:
+- STORY ARCHITECTURE: Use a problem-solution-result narrative structure for each example
+- QUANTIFIED IMPACT: Include specific metrics that align with the role's success criteria
+- SKILL BRIDGING: Connect technical skills to business outcomes and company objectives
+- FUTURE VISION: Articulate how you see yourself contributing to their long-term goals
+- CULTURAL ALIGNMENT: Demonstrate understanding of company culture and how you'd fit
+
+PSYCHOLOGICAL PERSUASION:
+- CONFIDENCE PROJECTION: Use assertive language that conveys competence without arrogance
+- ENTHUSIASM AUTHENTICITY: Show genuine excitement for the specific role and company
+- PROBLEM AWARENESS: Acknowledge challenges in their industry/role and position yourself as the solution
+- GROWTH MINDSET: Emphasize continuous learning and adaptation to new challenges
+- COLLABORATIVE SPIRIT: Balance individual achievements with team-oriented language
+
+STRATEGIC POSITIONING:
+- COMPETITIVE DIFFERENTIATION: Highlight unique combinations of skills that set you apart
+- MARKET UNDERSTANDING: Reference industry trends, challenges, or opportunities
+- SCALABILITY FOCUS: Emphasize ability to grow with the company and take on increasing responsibility
+- INNOVATION EMPHASIS: Highlight creative problem-solving and forward-thinking approaches
+- RESULTS ORIENTATION: Focus on outcomes and impact rather than just responsibilities
+
+CLOSING EXCELLENCE:
+- SPECIFIC NEXT STEPS: Suggest concrete next steps rather than generic "look forward to hearing from you"
+- VALUE REINFORCEMENT: Briefly restate your key value proposition
+- AVAILABILITY INDICATION: Mention your availability for interviews or start date flexibility
+- GRATITUDE EXPRESSION: Thank them for their time and consideration
+- PROFESSIONAL CONFIDENCE: End with confidence in your ability to contribute to their success
+
 Output only the cover letter text in proper business letter format, no explanations or additional commentary."""
 
         self.user_prompt_template = """Job Description:
