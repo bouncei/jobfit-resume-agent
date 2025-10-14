@@ -1,0 +1,40 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.pyw
+*.pyz
+
+# Environment variables
+.env
+
+# Credentials
+credentials.json
+token.json  
+
+# Virtual environment
+venv/
+
+# Logs
+logs/
+
+# Temp files
+*.tmp
+
+# Backup files
+*.bak
+
+# Cursor files
+.cursor/
+
+# Cursor rules
+.cursorrules
+
+# Cursor rules
+.cursorrules
+
+.cursor/plans/
+.cursor/rules/
+.cursor/rules.md
+.cursor/rules.md

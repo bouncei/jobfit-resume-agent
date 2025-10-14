@@ -1,0 +1,47 @@
+Senior Software Engineer - TechCorp
+
+Company: TechCorp
+Location: San Francisco, CA (Remote options available)
+Job Type: Full-time
+
+Job Description:
+We are seeking a highly skilled Senior Software Engineer to join our growing engineering team. The ideal candidate will have extensive experience in full-stack development, cloud technologies, and modern software engineering practices.
+
+Key Responsibilities:
+• Design and develop scalable web applications using React, Node.js, and Python
+• Collaborate with cross-functional teams to deliver high-quality software solutions
+• Mentor junior developers and contribute to technical decision-making
+• Implement and maintain CI/CD pipelines using Docker and Kubernetes
+• Work with cloud platforms (AWS, GCP) to deploy and manage applications
+• Participate in code reviews and ensure adherence to coding standards
+• Troubleshoot and optimize application performance
+• Contribute to architectural decisions and system design
+
+Required Qualifications:
+• Bachelor's degree in Computer Science or related field
+• 5+ years of experience in software development
+• Strong proficiency in JavaScript, Python, and modern web frameworks
+• Experience with React, Node.js, and RESTful API development
+• Familiarity with database technologies (PostgreSQL, MongoDB)
+• Knowledge of cloud platforms and containerization technologies
+• Experience with version control systems (Git) and agile methodologies
+• Strong problem-solving skills and attention to detail
+• Excellent communication and collaboration abilities
+
+Preferred Qualifications:
+• Master's degree in Computer Science or related field
+• Experience with microservices architecture
+• Knowledge of DevOps practices and tools
+• Familiarity with machine learning frameworks
+• Experience with mobile development (React Native)
+• Contributions to open-source projects
+
+Benefits:
+• Competitive salary and equity package
+• Comprehensive health, dental, and vision insurance
+• Flexible work arrangements and unlimited PTO
+• Professional development opportunities
+• State-of-the-art equipment and workspace
+
+TechCorp is an equal opportunity employer committed to diversity and inclusion. We welcome applications from all qualified candidates regardless of race, gender, age, religion, sexual orientation, or disability status.
+
