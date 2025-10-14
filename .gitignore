@@ -38,3 +38,6 @@ logs/
 .cursor/rules/
 .cursor/rules.md
 .cursor/rules.md
+
+# secrets
+/secrets

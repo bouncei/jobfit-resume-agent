@@ -1,60 +1,65 @@
-[Your Full Name]
-[Your Email Address] | [Your Phone Number] | [Your City, State] | [LinkedIn Profile] | [Portfolio/Website]
+JOSHUA INYANG
++234 905 518 8600 | joshuainyang255@gmail.com | linkedin.com/in/joshua-inyang-2753841b7 | github.com/bouncei | www.bouncei.tech
 
 PROFESSIONAL SUMMARY
-Experienced [Your Profession] with [X] years of expertise in [key skill areas]. Proven track record of [major achievements or areas of impact]. Passionate about [relevant industry interests] and committed to delivering [value proposition].
+Software Engineer with 6+ years of experience architecting, developing, and deploying scalable, production-ready applications across mobile, full-stack, and AI domains. Proven expertise in leading end-to-end development of high-impact products using TypeScript, React Native, Next.js, Node.js, Python, and FastAPI. Skilled in integrating Large Language Models (LLMs), real-time data pipelines, and cloud platforms (AWS, GCP) with modern databases (PostgreSQL, MongoDB, Elasticsearch) and state management solutions. Strong track record of driving performance optimization, mentoring teams, and delivering intelligent, user-centric solutions that scale.
 
 TECHNICAL SKILLS
-• Programming Languages: [List relevant languages]
-• Frameworks & Libraries: [List relevant frameworks]
-• Tools & Technologies: [List relevant tools]
-• Databases: [List database experience]
-• Cloud Platforms: [List cloud experience]
-• Other Skills: [List additional relevant skills]
+• Programming Languages: TypeScript, Python, JavaScript, SQL
+• Frontend Technologies: React, React Native, Next.js, Expo, HTML5, CSS3, Responsive Design
+• Backend Technologies: Node.js, FastAPI, Express.js, RESTful APIs, GraphQL, Microservices
+• Mobile Development: React Native, Expo, Android Development, iOS Development, Cross-platform
+• AI/ML Technologies: LangChain, OpenAI API, Hugging Face Transformers, LangGraph, Prompt Engineering, Retrieval-Augmented Generation (RAG), Embedding Models, Agent Frameworks, Agent2Agent
+• Databases: PostgreSQL, MongoDB, Redis, Elasticsearch, Weaviate, Pinecone, Database Design, Query Optimization
+• Cloud Platforms: AWS (EC2, Lambda, S3), Google Cloud Platform (GCP), Azure, Cloud Architecture, Serverless
+• DevOps & Tools: Docker, CI/CD, Git, GitHub, Postman, Agile, Scrum, Code Reviews
+• Other Technologies: Blockchain, SEO, Web Development, OOP, Similarity Search, State Management (Zustand), Firebase, Supabase
 
 PROFESSIONAL EXPERIENCE
 
-[Job Title] | [Company Name] | [Location] | [Start Date] - [End Date]
-• [Achievement-focused bullet point with quantifiable results]
-• [Technical accomplishment that demonstrates relevant skills]
-• [Leadership or collaboration example]
-• [Process improvement or efficiency gain]
+Founding Fullstack Engineer | ThinkNodes | New York, NY, USA | April 2025 - Present
+• Led architecture, development, and deployment of Sales Parrot, an AI-powered sales automation platform from inception to production
+• Designed and integrated AI/LLM-driven features including conversational agents, intelligent lead scoring, personalized outreach, and AI-assisted chat continuation with custom orchestration pipelines
+• Built hybrid backend architecture with FastAPI, PostgreSQL, and Weaviate, enabling structured queries and semantic/embedding search across lead and campaign data
+• Implemented data ingestion and enrichment pipelines pulling verified leads from CoreSignal and Elasticsearch, ensuring accuracy and scale (up to 1000+ leads per pull)
+• Built seamless email integration (Google Workspace, LinkedIn Outlook, SMTP), enabling automated outreach, campaign scheduling, and preference-based delivery
+• Implemented CI/CD pipelines, Docker containerization, and automated deployments, improving delivery speed and reliability across environments
+• Engineered modular React frontend, delivering responsive, high-performance, and user-friendly dashboards for campaign management and lead review
 
-[Previous Job Title] | [Previous Company] | [Location] | [Start Date] - [End Date]
-• [Achievement-focused bullet point with quantifiable results]
-• [Technical accomplishment that demonstrates relevant skills]
-• [Leadership or collaboration example]
-• [Process improvement or efficiency gain]
+Senior Fullstack Engineer | The House Of Sounds | London, England, United Kingdom | June 2022 - April 2025
+• Led development and launch of Yarn, a mobile-first music application transforming fan engagement and simplifying artist discovery
+• Integrated Spotify API, enabling seamless account sync and access to users' favorite tracks directly within the app
+• Designed and launched AI-powered songwriting assistant, leveraging LLMs to enhance creative workflows for users
+• Implemented real-time notifications, activity tracking, and subculture-based content feeds, improving user retention and engagement
+• Streamlined financial management features, providing artists and fans with structured resource allocation and project tracking tools
+• Collaborated cross-functionally to align technical architecture with product vision, delivering scalable, maintainable, and user-centric solutions
+• Built end-to-end solutions using modern fullstack toolset: React Native (Expo), TypeScript, Node.js, Next.js, Supabase, Zustand, Firebase, and PostgreSQL
 
-[Earlier Job Title] | [Earlier Company] | [Location] | [Start Date] - [End Date]
-• [Achievement-focused bullet point with quantifiable results]
-• [Technical accomplishment that demonstrates relevant skills]
-• [Project or initiative you led]
+Mobile Engineer | Codelabprojects | Federal Capital Territory, Nigeria | July 2024 - October 2024
+• Optimized and refactored e-commerce mobile application codebase using React Native, TypeScript, and Expo, improving performance and load speed by 38%
+• Implemented real-time chat system for seamless customer-rider communication and added dedicated customer support module, boosting user satisfaction and retention
+• Developed location-based features, including precise pickup and delivery pinning with accurate delivery time calculations, improving logistics efficiency
+• Reengineered state management with Zustand, ensuring scalable data handling and improved application stability
+• Enhanced UI/UX design, delivering modern, intuitive, and user-friendly interface aligned with best practices
+
+Software Engineer | TWEN | Maryland, USA | February 2023 - November 2023
+• Collaborated with cross-functional teams in Agile environment, contributing to sprint planning, code reviews, and timely delivery of features
+• Managed multiple projects simultaneously, balancing priorities and achieving client satisfaction with high-quality releases
+• Delivered fullstack web applications using React, Next.js, Node.js, TypeScript, and PostgreSQL, meeting diverse client requirements across multiple industries
 
 EDUCATION
-[Degree Type] in [Field of Study] | [University Name] | [Location] | [Graduation Year]
-• Relevant Coursework: [List relevant courses]
-• GPA: [If 3.5 or higher]
-• Honors/Awards: [If applicable]
+Bachelor of Science in Statistics | Bayero University, Kano | Nigeria | September 2018 - March 2022
+• Relevant Coursework: Statistical Analysis, Data Science, Mathematics, Probability Theory, Research Methods
 
-PROJECTS
-[Project Name] | [Technologies Used] | [Date]
-• [Brief description of project and your role]
-• [Key technical challenges solved]
-• [Results or impact achieved]
+Computer Science Certification | Harvard University | Cambridge, MA | September 2020 - December 2020
+• Completed advanced coursework in computer science fundamentals and software engineering principles
 
-[Another Project Name] | [Technologies Used] | [Date]
-• [Brief description of project and your role]
-• [Key technical challenges solved]
-• [Results or impact achieved]
 
-CERTIFICATIONS & ACHIEVEMENTS
-• [Relevant certification name] - [Issuing organization] ([Year])
-• [Another certification] - [Issuing organization] ([Year])
-• [Professional achievement or award]
+
 
 ADDITIONAL INFORMATION
-• Languages: [List languages and proficiency levels]
-• Volunteer Work: [Relevant volunteer experience]
-• Publications: [If applicable]
+• Languages: English (Native), French (Conversational)
+• Open Source Contributions: Active contributor to React Native and AI/ML projects
+• Technical Leadership: Experience mentoring junior developers and leading cross-functional teams
+• Industry Recognition: Featured speaker at tech conferences on AI integration in mobile applications
 
