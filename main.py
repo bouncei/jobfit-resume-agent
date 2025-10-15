@@ -18,19 +18,24 @@ from agents.orchestrator import ResumeAgentOrchestrator
 @click.option('--test', is_flag=True, help='Test all integrations without processing')
 @click.option('--job-file', type=click.Path(exists=True), help='Path to file containing job description')
 @click.option('--no-cover-letter', is_flag=True, help='Skip cover letter generation')
+@click.option('--no-qa', is_flag=True, help='Skip Q&A session')
 @click.option('--user-name', type=str, help='Override user name for cover letter')
+@click.option('--question', type=str, help='Ask a single question and exit')
 @click.version_option(version='1.0.0', prog_name='Resume Agent')
 def main(
     test: bool,
     job_file: Optional[str],
     no_cover_letter: bool,
-    user_name: Optional[str]
+    no_qa: bool,
+    user_name: Optional[str],
+    question: Optional[str]
 ):
     """
     Resume & Cover Letter Agent
     
     Automatically refine your resume and generate cover letters tailored to specific job descriptions.
-    The refined resume is uploaded to Google Docs, and an optional cover letter is displayed in the terminal.
+    The refined resume is uploaded to Google Docs, with optional cover letter generation and 
+    interactive Q&A session for interview preparation.
     """
     formatter = OutputFormatter()
     
@@ -74,6 +79,36 @@ def main(
             formatter.print_error(error_msg)
             sys.exit(1)
         
+        # Handle single question mode
+        if question:
+            formatter.print_info("Single question mode - generating resume first...")
+            
+            # Generate resume for context
+            try:
+                results = orchestrator.process_job_application(
+                    job_description=job_description,
+                    generate_cover_letter=False,
+                    user_name=user_name
+                )
+                
+                # Answer the single question
+                formatter.print_header("SINGLE QUESTION ANSWER")
+                formatter.print_processing(f"Generating answer for: '{question}'")
+                
+                answer = orchestrator.quick_qa(
+                    question=question,
+                    job_description=job_description,
+                    resume_text=results['refined_resume']
+                )
+                
+                formatter.print_section(f"Q: {question}", answer)
+                formatter.print_success("Single question answered successfully!")
+                sys.exit(0)
+                
+            except Exception as e:
+                formatter.print_error(f"Failed to answer question: {str(e)}")
+                sys.exit(1)
+        
         # Get cover letter preference
         if no_cover_letter:
             generate_cover_letter = False
@@ -100,6 +135,30 @@ def main(
                     f"Processing took {results['processing_time']:.1f} seconds. "
                     "Consider optimizing your OpenAI API settings for faster responses."
                 )
+            
+            # Run Q&A session if enabled
+            if not no_qa and results['refined_resume']:
+                formatter.print_info("\n" + "="*60)
+                run_qa = InputHandler.get_user_confirmation(
+                    "Would you like to start an interview Q&A session?", 
+                    default=True
+                )
+                
+                if run_qa:
+                    try:
+                        qa_results = orchestrator.run_qa_session(
+                            job_description=job_description,
+                            resume_text=results['refined_resume'],
+                            interactive=True
+                        )
+                        
+                        if qa_results.get('session_completed'):
+                            formatter.print_success("Q&A session completed successfully!")
+                        
+                    except Exception as e:
+                        formatter.print_error(f"Q&A session failed: {str(e)}")
+                else:
+                    formatter.print_info("Q&A session skipped. You can run it later with the --question flag.")
             
         except Exception as e:
             formatter.print_error(f"Process failed: {str(e)}")
