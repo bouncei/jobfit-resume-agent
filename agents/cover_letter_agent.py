@@ -24,7 +24,7 @@ Guidelines:
 - Demonstrate understanding of the company's needs and how the candidate can address them
 - Show personality while maintaining professional tone
 - Close with a clear call to action expressing interest in an interview
-- Keep to exactly 3-4 paragraphs, be concise and impactful
+- Keep to exactly 2-3 paragraphs, be concise and impactful
 - Maximum 250-300 words total
 - Use plain text format without markdown or special formatting
 - Make it personal and specific to this role, not generic

@@ -53,13 +53,3 @@ Bachelor of Science in Statistics | Bayero University, Kano | Nigeria | Septembe
 
 Computer Science Certification | Harvard University | Cambridge, MA | September 2020 - December 2020
 • Completed advanced coursework in computer science fundamentals and software engineering principles
-
-
-
-
-ADDITIONAL INFORMATION
-• Languages: English (Native), French (Conversational)
-• Open Source Contributions: Active contributor to React Native and AI/ML projects
-• Technical Leadership: Experience mentoring junior developers and leading cross-functional teams
-• Industry Recognition: Featured speaker at tech conferences on AI integration in mobile applications
-

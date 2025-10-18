@@ -105,6 +105,28 @@ class ResumeAgentOrchestrator:
                 
                 results['cover_letter'] = cover_letter
                 self.formatter.print_success("Cover letter generated successfully")
+                
+                # Ask user if they want to save cover letter to Google Docs
+                from utils.input_handler import InputHandler
+                save_to_docs = InputHandler.get_user_confirmation(
+                    "Would you like to save the cover letter to Google Docs?", 
+                    default=True
+                )
+                
+                if save_to_docs:
+                    self.formatter.print_processing("Uploading cover letter to Google Docs")
+                    
+                    # Create cover letter document title
+                    cover_letter_title = self.formatter.format_cover_letter_title(company_name)
+                    
+                    # Create cover letter document
+                    cover_letter_docs_info = self.google_docs_client.create_cover_letter_document(
+                        cover_letter_title, 
+                        cover_letter
+                    )
+                    
+                    results['cover_letter_docs_info'] = cover_letter_docs_info
+                    self.formatter.print_success("Cover letter uploaded to Google Docs")
             else:
                 self.formatter.print_step_progress(3, 4, "Skipping cover letter generation")
             
@@ -152,6 +174,13 @@ class ResumeAgentOrchestrator:
         # Display cover letter if generated
         if results['cover_letter']:
             self.formatter.print_cover_letter(results['cover_letter'])
+        
+        # Display cover letter Google Docs link if created
+        if results.get('cover_letter_docs_info'):
+            self.formatter.print_google_docs_link(
+                results['cover_letter_docs_info']['document_url'],
+                results['cover_letter_docs_info']['title']
+            )
         
         # Display completion summary
         self.formatter.print_completion_summary(
@@ -260,7 +289,7 @@ class ResumeAgentOrchestrator:
             self.formatter.print_info("• Type 'done' to finish the Q&A session")
             
             question_count = 0
-            max_questions = 10  # Limit to prevent excessive API usage
+            max_questions = 20  # Extended limit for comprehensive interview preparation
             
             while question_count < max_questions:
                 try:

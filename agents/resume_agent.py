@@ -36,6 +36,10 @@ WHAT YOU CAN OPTIMIZE:
 - Improve action verbs and quantifiable achievements in existing bullet points
 - Reorder sections to prioritize most relevant content for the role
 
+SECTIONS TO EXCLUDE:
+- Do NOT include an "ADDITIONAL INFORMATION" section in the refined resume
+- Focus on core professional sections: Professional Summary, Technical Skills, Professional Experience, and Education
+
 ADVANCED OPTIMIZATION STRATEGIES:
 
 KEYWORD & ATS OPTIMIZATION:

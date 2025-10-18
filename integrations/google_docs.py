@@ -338,7 +338,7 @@ class GoogleDocsClient:
         headers = [
             'PROFESSIONAL SUMMARY', 'TECHNICAL SKILLS', 'PROFESSIONAL EXPERIENCE',
             'EDUCATION', 'PROJECTS', 'TECHNICAL PROJECTS', 'CERTIFICATIONS',
-            'CERTIFICATIONS & ACHIEVEMENTS', 'ADDITIONAL INFORMATION', 'SKILLS',
+            'CERTIFICATIONS & ACHIEVEMENTS', 'SKILLS',
             'EXPERIENCE', 'SUMMARY', 'OBJECTIVE', 'ACHIEVEMENTS', 'AWARDS'
         ]
         
@@ -430,6 +430,97 @@ class GoogleDocsClient:
             # If text insertion fails, we should clean up the empty document
             # For now, we'll just raise the exception
             raise Exception(f"Failed to create resume document: {str(e)}")
+    
+    def create_cover_letter_document(self, title: str, cover_letter_text: str) -> Dict[str, Any]:
+        """
+        Create a Google Docs document with cover letter content
+        
+        Args:
+            title: The title for the document
+            cover_letter_text: The cover letter text content
+            
+        Returns:
+            Dict[str, Any]: Document metadata including document ID and URL
+            
+        Raises:
+            Exception: If document creation or text insertion fails
+        """
+        # Create the document
+        doc_info = self.create_document(title)
+        
+        try:
+            # Insert the cover letter text
+            self.insert_text(doc_info['document_id'], cover_letter_text)
+            
+            # Apply basic formatting (no special resume formatting needed for cover letters)
+            self._format_cover_letter(doc_info['document_id'], cover_letter_text)
+            
+            return doc_info
+        
+        except Exception as e:
+            # If text insertion fails, we should clean up the empty document
+            # For now, we'll just raise the exception
+            raise Exception(f"Failed to create cover letter document: {str(e)}")
+    
+    def _format_cover_letter(self, document_id: str, cover_letter_text: str) -> bool:
+        """
+        Apply basic formatting to cover letter document
+        
+        Args:
+            document_id: The ID of the document
+            cover_letter_text: The cover letter text to format
+            
+        Returns:
+            bool: True if formatting was successful
+            
+        Raises:
+            Exception: If formatting fails
+        """
+        if not self.service:
+            raise Exception("Google Docs service not initialized. Please authenticate first.")
+        
+        try:
+            formatting_requests = []
+            
+            lines = cover_letter_text.split('\n')
+            current_pos = 1
+            
+            for line in lines:
+                line_length = len(line)
+                
+                if line_length > 0:
+                    # Add spacing between paragraphs
+                    formatting_requests.append({
+                        'updateParagraphStyle': {
+                            'range': {
+                                'startIndex': current_pos,
+                                'endIndex': current_pos + line_length
+                            },
+                            'paragraphStyle': {
+                                'spaceBelow': {
+                                    'magnitude': 6,
+                                    'unit': 'PT'
+                                }
+                            },
+                            'fields': 'spaceBelow'
+                        }
+                    })
+                
+                current_pos += line_length + 1  # +1 for newline character
+            
+            # Apply formatting if we have requests
+            if formatting_requests:
+                self.service.documents().batchUpdate(
+                    documentId=document_id,
+                    body={'requests': formatting_requests}
+                ).execute()
+            
+            return True
+        
+        except HttpError as e:
+            raise Exception(f"Failed to format cover letter document: {str(e)}")
+        except Exception as e:
+            raise Exception(f"Unexpected error formatting cover letter: {str(e)}")
     
     def test_connection(self) -> bool:
         """
