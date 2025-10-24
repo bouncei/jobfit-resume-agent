@@ -69,8 +69,15 @@ class ResumeAgentOrchestrator:
             if not is_valid:
                 raise ValueError(f"Resume validation failed: {error_msg}")
             
+            # Analyze ATS optimization and provide insights
+            ats_analysis = self.resume_agent.analyze_resume_match(refined_resume, job_description)
+            
             results['refined_resume'] = refined_resume
+            results['ats_analysis'] = ats_analysis
             self.formatter.print_success("Resume refined successfully")
+            
+            # Display ATS optimization insights
+            self.display_ats_insights(ats_analysis)
             
             # Step 2: Upload to Google Docs
             self.formatter.print_step_progress(2, 4, "Uploading resume to Google Docs")
@@ -388,4 +395,110 @@ class ResumeAgentOrchestrator:
             return answer
         except Exception as e:
             return f"Error generating answer: {str(e)}"
+    
+    def display_ats_insights(self, ats_analysis: dict) -> None:
+        """
+        Display ATS optimization insights to the user
+        
+        Args:
+            ats_analysis: ATS analysis results from resume matching
+        """
+        if not ats_analysis:
+            return
+        
+        self.formatter.print_header("ATS OPTIMIZATION INSIGHTS")
+        
+        # Display ATS optimization score
+        ats_score = ats_analysis.get('ats_optimization_score', 0)
+        match_percentage = ats_analysis.get('match_percentage', 0)
+        
+        if ats_score >= 85:
+            self.formatter.print_success(f"🚀 Excellent ATS Score: {ats_score:.1f}% (Match: {match_percentage:.1f}%)")
+        elif ats_score >= 70:
+            self.formatter.print_info(f"✅ Good ATS Score: {ats_score:.1f}% (Match: {match_percentage:.1f}%)")
+        else:
+            self.formatter.print_warning(f"⚠️  Needs Improvement: {ats_score:.1f}% (Match: {match_percentage:.1f}%)")
+        
+        # Display matched keywords
+        tech_matches = ats_analysis.get('technical_matches', {})
+        if tech_matches:
+            self.formatter.print_info(f"✅ Matched {len(tech_matches)} critical technical keywords:")
+            for keyword, data in list(tech_matches.items())[:5]:  # Show top 5
+                self.formatter.print_info(f"   • {keyword} (variations: {', '.join(data['matched_variations'][:3])})")
+        
+        # Display missing high-priority keywords
+        missing_high = ats_analysis.get('missing_high_priority', [])
+        if missing_high:
+            self.formatter.print_warning(f"🔴 Missing HIGH PRIORITY keywords: {', '.join(missing_high[:5])}")
+        
+        # Display action verb and quantification scores
+        action_score = ats_analysis.get('action_verb_score', 0)
+        quant_score = ats_analysis.get('quantification_score', 0)
+        
+        self.formatter.print_info(f"💪 Action Verbs Score: {action_score:.1f}%")
+        self.formatter.print_info(f"📊 Quantification Score: {quant_score:.1f}%")
+        
+        # Display irrelevant content warnings
+        irrelevant = ats_analysis.get('irrelevant_content', [])
+        if irrelevant:
+            self.formatter.print_warning(f"🗑️  Consider removing: {', '.join(irrelevant[:3])}")
+        
+        # Display optimization tips
+        tips = ats_analysis.get('ats_optimization_tips', [])
+        if tips:
+            self.formatter.print_info("🎯 ATS Optimization Tips:")
+            for tip in tips[:4]:  # Show top 4 tips
+                self.formatter.print_info(f"   • {tip}")
+        
+        print()  # Add spacing
+    
+    def generate_ats_report(self, job_description: str, refined_resume: str) -> dict:
+        """
+        Generate a comprehensive ATS optimization report
+        
+        Args:
+            job_description: The job description text
+            refined_resume: The refined resume text
+            
+        Returns:
+            dict: Comprehensive ATS report
+        """
+        # Extract job keywords for analysis
+        job_keywords = self.resume_agent.extract_job_keywords(job_description)
+        
+        # Perform detailed resume analysis
+        ats_analysis = self.resume_agent.analyze_resume_match(refined_resume, job_description)
+        
+        # Identify potential improvements
+        irrelevant_sections = self.resume_agent.identify_irrelevant_sections(refined_resume, job_keywords)
+        
+        report = {
+            'job_analysis': {
+                'total_keywords_identified': job_keywords.get('total_importance_score', 0),
+                'critical_technical_skills': len([k for k, v in job_keywords.get('technical', {}).items() if v.get('importance', 0) >= 8]),
+                'action_verbs_in_job': len(job_keywords.get('action_verbs', [])),
+                'metrics_expectations': job_keywords.get('metrics_expectations', [])
+            },
+            'resume_performance': {
+                'ats_score': ats_analysis.get('ats_optimization_score', 0),
+                'keyword_match_percentage': ats_analysis.get('match_percentage', 0),
+                'technical_keywords_matched': len(ats_analysis.get('technical_matches', {})),
+                'missing_critical_keywords': len(ats_analysis.get('missing_high_priority', [])),
+                'action_verb_alignment': ats_analysis.get('action_verb_score', 0),
+                'quantification_strength': ats_analysis.get('quantification_score', 0)
+            },
+            'improvement_opportunities': {
+                'high_priority_additions': ats_analysis.get('missing_high_priority', [])[:5],
+                'content_to_consider_removing': irrelevant_sections[:3],
+                'optimization_tips': ats_analysis.get('ats_optimization_tips', []),
+                'keyword_density_status': 'Optimal' if ats_analysis.get('match_percentage', 0) > 75 else 'Needs Improvement'
+            },
+            'competitive_advantages': {
+                'unique_technical_combinations': list(ats_analysis.get('technical_matches', {}).keys())[:5],
+                'leadership_indicators': len([k for k in ats_analysis.get('soft_skill_matches', {}) if 'leadership' in k.lower()]),
+                'scale_experience_highlighted': any('scale' in str(v).lower() for v in ats_analysis.get('technical_matches', {}).values())
+            }
+        }
+        
+        return report
 
