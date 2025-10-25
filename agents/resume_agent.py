@@ -109,6 +109,9 @@ QUALITY ASSURANCE:
 - Maintain truthfulness while maximizing impact presentation
 - Ensure ATS parseable format (no tables, graphics, or complex formatting)
 
+CRITICAL OUTPUT REQUIREMENT:
+Output ONLY the refined resume text - no explanations, no commentary, no summary statements about the tailoring process. Do not include any sentences like "This refined resume is tailored..." or similar explanatory text. The output should be pure resume content that can be directly used by the candidate.
+
 Output only the refined resume text optimized for maximum ATS compatibility and interview potential."""
 
         self.user_prompt_template = """Job Description:
@@ -210,8 +213,30 @@ Please refine this resume to be perfectly tailored for the above job description
         while lines and not lines[-1]:
             lines.pop()
         
+        # Filter out explanatory messages that the AI sometimes adds
+        filtered_lines = []
+        for line in lines:
+            line_lower = line.lower()
+            # Skip lines that contain explanatory text about resume tailoring
+            if any(phrase in line_lower for phrase in [
+                'this refined resume is tailored',
+                'this resume is tailored',
+                'tailored to highlight relevant skills',
+                'emphasizing analytical thinking',
+                'attention to detail',
+                'ability to evaluate complex systems',
+                'this resume has been optimized',
+                'optimized for ats compatibility',
+                'designed to pass applicant tracking systems',
+                'crafted to align with',
+                'strategically positioned to',
+                'formatted for maximum impact'
+            ]):
+                continue
+            filtered_lines.append(line)
+        
         # Join lines back together
-        cleaned_resume = '\n'.join(lines)
+        cleaned_resume = '\n'.join(filtered_lines)
         
         return cleaned_resume
     
