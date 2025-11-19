@@ -17,70 +17,102 @@ class ResumeAgent:
         self.openai_client = OpenAIClient()
         
         # Define the resume refinement prompt template
-        self.system_prompt = """You are an expert resume writer and career coach specializing in tailoring resumes to specific job descriptions.
+        self.system_prompt = """You are an expert resume writer and ATS optimization specialist who creates resumes that pass Applicant Tracking Systems and get interviews.
 
-Your task is to refine the provided resume to perfectly match the job description while maintaining accuracy and the candidate's professional identity.
+Your mission: Transform resumes to perfectly match job requirements while ensuring maximum ATS compatibility and recruiter appeal.
 
 CRITICAL PRESERVATION RULES - DO NOT MODIFY:
 - Keep ALL educational details exactly as written (degrees, institutions, dates, coursework, GPA, honors)
 - Preserve ALL job titles, company names, locations, and employment dates exactly as stated
 - Maintain the candidate's level of professional seniority (Senior, Lead, Founding, etc.)
-- Keep the stated years of experience (5+ years) - never reduce experience level
+- Keep the stated years of experience (6+ years) - never reduce experience level
 - Do not change any factual information about roles, companies, or achievements
 
-WHAT YOU CAN OPTIMIZE:
-- Reorder and emphasize bullet points under each role by relevance to the target job
-- Enhance technical skills section by highlighting relevant technologies
-- Adjust professional summary to emphasize skills most relevant to the job
-- Use keywords from the job description naturally in bullet point descriptions
-- Improve action verbs and quantifiable achievements in existing bullet points
-- Reorder sections to prioritize most relevant content for the role
+CORE OPTIMIZATION MANDATE:
+The resume MUST be tailored for THIS SPECIFIC JOB. Generic resumes fail. Every word should serve the goal of getting past ATS and securing an interview.
 
-ADVANCED OPTIMIZATION STRATEGIES:
+ATS DOMINANCE STRATEGIES:
 
-KEYWORD & ATS OPTIMIZATION:
-- KEYWORD DENSITY: Ensure 8-12 relevant keywords from job description appear naturally throughout
-- ATS OPTIMIZATION: Use exact keyword phrases from job posting (e.g., "React Native" not "React-Native")
-- SYNONYM INTEGRATION: Include both technical terms and business language (e.g., "ML" and "Machine Learning")
-- SKILL VARIATIONS: Use multiple forms of same skill (e.g., "JavaScript", "JS", "ECMAScript")
-- ACRONYM EXPANSION: Include both acronyms and full terms (e.g., "API" and "Application Programming Interface")
+KEYWORD MASTERY (CRITICAL FOR ATS):
+- MIRROR JOB LANGUAGE: Use EXACT phrases from job description, not paraphrased versions
+- KEYWORD DENSITY: Achieve 10-15% keyword density without keyword stuffing  
+- VARIATION INTEGRATION: Include technical terms AND business language (e.g., "ML", "Machine Learning", "Artificial Intelligence")
+- ACRONYM STRATEGY: Use both abbreviated and full forms (e.g., "API" and "Application Programming Interface")
+- SKILL SYNONYMS: Include multiple ways to express same competency (e.g., "JavaScript", "JS", "ECMAScript", "Node.js")
+- CONTEXT EMBEDDING: Weave keywords naturally into achievement descriptions, not just skills lists
+
+RELEVANCE PRIORITIZATION (ELIMINATE ATS KILLERS):
+- RELEVANCE HIERARCHY: Rank every line by direct job relevance (1-10 scale) - prioritize 8+ rated content
+- REMOVE IRRELEVANCIES: Cut hobbies, unrelated interests, outdated technologies that don't serve this job
+- SPACE OPTIMIZATION: Every line must earn its place - remove generic fluff to make room for job-critical details
+- SECTION ORDERING: Lead with most job-relevant sections (often Technical Skills before Experience for tech roles)
+- BULLET PRIORITIZATION: Reorder achievements within each role by relevance to target position
+
+ACTION VERB TRANSFORMATION (MAKE EVERY BULLET POWERFUL):
+- STRONG ACTION VERBS: Replace weak language ("responsible for", "worked on", "helped") with powerful verbs ("architected", "spearheaded", "optimized")
+- JOB-SPECIFIC VERBS: Prioritize action verbs that appear in the job description
+- QUANTIFIED ACHIEVEMENTS: Transform every possible accomplishment into measurable impact using numbers, percentages, scale indicators
+- RESULT-ORIENTED LANGUAGE: Focus on outcomes and business impact, not just tasks performed
+- PROGRESSION INDICATORS: Show increasing responsibility and scope across roles
+
+ADVANCED ATS OPTIMIZATION:
 
 CONTENT INTELLIGENCE:
-- IMPACT QUANTIFICATION: Emphasize metrics that align with job requirements (performance, scale, efficiency)
-- RELEVANCE SCORING: Rank experiences by direct relevance to job requirements (1-10 scale)
-- SKILL PRIORITIZATION: List most relevant technical skills first in each category
-- ACHIEVEMENT AMPLIFICATION: Expand on achievements that directly match job requirements
-- CONTEXT BRIDGING: Connect seemingly unrelated experience to job requirements through transferable skills
+- IMPACT QUANTIFICATION: Every bullet point should include metrics when possible (performance improvements, user scale, team size, timeline achievements)
+- PROBLEM-SOLUTION FRAMING: Present experience as solutions to problems the target company likely faces
+- TECHNOLOGY STACK ALIGNMENT: Prominently feature tech stack mentioned in job posting
+- SCALE INDICATORS: Emphasize experience with scale/complexity relevant to target role
+- BUSINESS VALUE CONNECTION: Link technical achievements to business outcomes
 
 INDUSTRY & ROLE ADAPTATION:
-- INDUSTRY ALIGNMENT: Adjust technical terminology to match company's tech stack and industry
-- ROLE-SPECIFIC FOCUS: For senior roles, emphasize leadership; for technical roles, emphasize implementation
-- COMPANY SIZE MATCHING: Highlight startup experience for startups, enterprise experience for large companies
-- TECHNOLOGY STACK ALIGNMENT: Prioritize technologies mentioned in job description
-- METHODOLOGY MATCHING: Emphasize Agile/Scrum if mentioned, DevOps practices, etc.
+- COMPANY-SIZE MATCHING: Emphasize startup agility for startups, enterprise scale for large companies  
+- ROLE-LEVEL POSITIONING: For senior roles, lead with leadership/architecture; for IC roles, emphasize implementation depth
+- METHODOLOGY ALIGNMENT: Highlight Agile/Scrum, DevOps, or specific processes mentioned in job description
+- REMOTE WORK SIGNALS: Emphasize distributed collaboration if role is remote
+- GROWTH STAGE MATCHING: Highlight relevant experience (0-1 products for early stage, scale challenges for growth stage)
 
-STRATEGIC POSITIONING:
-- REMOTE WORK INDICATORS: Emphasize distributed team collaboration if job is remote
-- GROWTH METRICS: Highlight scalability achievements if company is scaling (users, performance, team size)
-- PROBLEM-SOLUTION MAPPING: Frame experiences as solutions to problems the company likely faces
-- COMPETITIVE ADVANTAGE: Highlight unique combinations of skills that set candidate apart
-- FUTURE-READY SKILLS: Emphasize emerging technologies and forward-thinking approaches
+PSYCHOLOGICAL POSITIONING:
+- CONFIDENCE PROJECTION: Use assertive language that demonstrates ownership and results
+- INNOVATION EMPHASIS: Highlight creative problem-solving and cutting-edge technology adoption
+- COLLABORATION BALANCE: Show both individual contribution and team leadership capabilities
+- LEARNING AGILITY: Demonstrate adaptation to new technologies and continuous skill development
+- FUTURE-READY POSITIONING: Emphasize emerging technologies and forward-thinking approaches
 
-PSYCHOLOGICAL OPTIMIZATION:
-- CONFIDENCE INDICATORS: Use strong action verbs that convey leadership and ownership
-- PROGRESSION NARRATIVE: Show clear career growth and increasing responsibility
-- INNOVATION EMPHASIS: Highlight creative problem-solving and innovative approaches
-- COLLABORATION SIGNALS: Balance individual achievements with team collaboration
-- LEARNING AGILITY: Demonstrate continuous learning and adaptation to new technologies
+STRATEGIC CONTENT RULES:
 
-Guidelines:
-- Maintain truthfulness - enhance existing content, never fabricate
-- Format as plain text without markdown or special formatting
-- Ensure the resume flows naturally and reads professionally
-- Keep professional tone and structure intact
-- Preserve all quantifiable metrics and achievements exactly as stated
+WHAT TO AMPLIFY:
+- Direct technology matches with job requirements
+- Leadership and mentoring experience (for senior roles)
+- Scale achievements that match company needs
+- Cross-functional collaboration
+- Performance optimizations and measurable improvements
+- Innovation and problem-solving examples
 
-Output only the refined resume text, no explanations or additional commentary."""
+WHAT TO MINIMIZE/REMOVE:
+- Hobbies unrelated to professional capabilities
+- Outdated technologies not mentioned in job posting
+- Entry-level or intern experiences (for senior positions)
+- Generic responsibilities without specific achievements
+- Overly technical jargon that doesn't appear in job description
+
+EXECUTION GUIDELINES:
+- Write in active voice with strong action verbs
+- Use present tense for current role, past tense for previous roles
+- Maintain 2-3 line bullet points for optimal ATS parsing
+- Include keywords naturally within context, never in isolation
+- Balance hard skills with relevant soft skills
+- Show career progression and increasing impact
+
+QUALITY ASSURANCE:
+- Every bullet point must serve the goal of getting THIS specific job
+- Keywords should feel natural, never forced
+- Maintain truthfulness while maximizing impact presentation
+- Ensure ATS parseable format (no tables, graphics, or complex formatting)
+
+CRITICAL OUTPUT REQUIREMENT:
+Output ONLY the refined resume text - no explanations, no commentary, no summary statements about the tailoring process. Do not include any sentences like "This refined resume is tailored..." or similar explanatory text. The output should be pure resume content that can be directly used by the candidate.
+
+Output only the refined resume text optimized for maximum ATS compatibility and interview potential."""
 
         self.user_prompt_template = """Job Description:
 {job_description}
@@ -181,8 +213,30 @@ Please refine this resume to be perfectly tailored for the above job description
         while lines and not lines[-1]:
             lines.pop()
         
+        # Filter out explanatory messages that the AI sometimes adds
+        filtered_lines = []
+        for line in lines:
+            line_lower = line.lower()
+            # Skip lines that contain explanatory text about resume tailoring
+            if any(phrase in line_lower for phrase in [
+                'this refined resume is tailored',
+                'this resume is tailored',
+                'tailored to highlight relevant skills',
+                'emphasizing analytical thinking',
+                'attention to detail',
+                'ability to evaluate complex systems',
+                'this resume has been optimized',
+                'optimized for ats compatibility',
+                'designed to pass applicant tracking systems',
+                'crafted to align with',
+                'strategically positioned to',
+                'formatted for maximum impact'
+            ]):
+                continue
+            filtered_lines.append(line)
+        
         # Join lines back together
-        cleaned_resume = '\n'.join(lines)
+        cleaned_resume = '\n'.join(filtered_lines)
         
         return cleaned_resume
     
@@ -230,11 +284,18 @@ Please refine this resume to be perfectly tailored for the above job description
                 if company in base_lower and company not in refined_lower:
                     return False, f"Company name '{company}' was removed from resume"
             
-            # Check that seniority levels are preserved
-            seniority_terms = ['founding', 'senior', '5+ years']
-            for term in seniority_terms:
-                if term in base_lower and term not in refined_lower:
-                    return False, f"Professional seniority indicator '{term}' was removed from resume"
+            # Check that appropriate seniority levels are preserved (more flexible)
+            # Allow some flexibility in seniority terms based on job context
+            critical_seniority_terms = ['senior', '6+ years', 'lead']  # Core seniority indicators
+            preserved_seniority = 0
+            
+            for term in critical_seniority_terms:
+                if term in base_lower and term in refined_lower:
+                    preserved_seniority += 1
+            
+            # Ensure at least one key seniority indicator is preserved
+            if preserved_seniority == 0 and any(term in base_lower for term in critical_seniority_terms):
+                return False, "Critical seniority indicators were removed - please preserve experience level"
             
             # Check that key job titles are preserved
             job_titles = ['founding fullstack engineer', 'senior fullstack engineer', 'mobile engineer', 'software engineer']
@@ -250,104 +311,450 @@ Please refine this resume to be perfectly tailored for the above job description
     
     def extract_job_keywords(self, job_description: str) -> dict:
         """
-        Extract and categorize keywords from job description for optimization
+        Extract and categorize keywords from job description with advanced ATS optimization
         
         Args:
             job_description: The job description text
             
         Returns:
-            dict: Categorized keywords for optimization
+            dict: Categorized keywords with importance scores for optimization
         """
         job_lower = job_description.lower()
+        job_text = job_description
         
-        # Technical skills keywords
-        tech_keywords = []
-        tech_terms = [
-            'python', 'javascript', 'typescript', 'react', 'node.js', 'fastapi',
-            'aws', 'gcp', 'docker', 'kubernetes', 'postgresql', 'mongodb',
-            'machine learning', 'ai', 'llm', 'api', 'microservices', 'agile'
-        ]
+        # Enhanced technical skills with variations and importance scoring
+        tech_keywords = {}
+        tech_terms_with_variations = {
+            'python': ['python', 'py', 'django', 'flask', 'fastapi', 'python3'],
+            'javascript': ['javascript', 'js', 'ecmascript', 'vanilla js', 'node'],
+            'typescript': ['typescript', 'ts', 'type script'],
+            'react': ['react', 'reactjs', 'react.js', 'react native', 'jsx'],
+            'node.js': ['node.js', 'nodejs', 'node js', 'express', 'express.js'],
+            'aws': ['aws', 'amazon web services', 'ec2', 'lambda', 's3', 'cloudformation'],
+            'gcp': ['gcp', 'google cloud', 'google cloud platform'],
+            'docker': ['docker', 'containerization', 'containers', 'dockerfile'],
+            'kubernetes': ['kubernetes', 'k8s', 'kubectl', 'helm', 'container orchestration'],
+            'postgresql': ['postgresql', 'postgres', 'psql', 'pg'],
+            'mongodb': ['mongodb', 'mongo', 'nosql', 'document database'],
+            'machine learning': ['machine learning', 'ml', 'artificial intelligence', 'ai'],
+            'api': ['api', 'restful', 'rest', 'graphql', 'microservices'],
+            'ci/cd': ['ci/cd', 'continuous integration', 'continuous deployment', 'devops'],
+            'git': ['git', 'github', 'gitlab', 'version control', 'source control'],
+            'agile': ['agile', 'scrum', 'kanban', 'sprint', 'jira'],
+            'redis': ['redis', 'caching', 'in-memory database'],
+            'elasticsearch': ['elasticsearch', 'elk', 'search engine', 'full-text search'],
+            'terraform': ['terraform', 'infrastructure as code', 'iac'],
+            'nextjs': ['next.js', 'nextjs', 'next js'],
+            'fastapi': ['fastapi', 'fast api'],
+            'langchain': ['langchain', 'lang chain', 'llm framework'],
+            'openai': ['openai', 'gpt', 'llm integration'],
+            'supabase': ['supabase', 'firebase', 'backend as a service'],
+            'zustand': ['zustand', 'state management']
+        }
         
-        for term in tech_terms:
-            if term in job_lower:
-                tech_keywords.append(term)
+        # Calculate frequency and importance for tech keywords
+        for primary_term, variations in tech_terms_with_variations.items():
+            total_mentions = 0
+            found_variations = []
+            
+            for variation in variations:
+                count = job_lower.count(variation.lower())
+                if count > 0:
+                    total_mentions += count
+                    found_variations.append(variation)
+            
+            if total_mentions > 0:
+                # Higher score for multiple mentions and variations
+                importance_score = min(10, total_mentions * 2 + len(found_variations))
+                tech_keywords[primary_term] = {
+                    'mentions': total_mentions,
+                    'variations': found_variations,
+                    'importance': importance_score
+                }
         
-        # Soft skills keywords
-        soft_keywords = []
-        soft_terms = [
-            'leadership', 'collaboration', 'communication', 'problem-solving',
-            'innovation', 'mentoring', 'cross-functional', 'strategic'
-        ]
+        # Enhanced soft skills with context awareness
+        soft_keywords = {}
+        soft_terms_patterns = {
+            'leadership': ['lead', 'leadership', 'manage', 'mentor', 'guide', 'supervise'],
+            'collaboration': ['collaborate', 'teamwork', 'cross-functional', 'work with'],
+            'communication': ['communicate', 'present', 'explain', 'articulate', 'documentation'],
+            'problem-solving': ['problem-solving', 'troubleshoot', 'debug', 'resolve', 'solve'],
+            'innovation': ['innovative', 'creative', 'improve', 'optimize', 'enhance'],
+            'analytical': ['analytical', 'analyze', 'data-driven', 'metrics', 'insights'],
+            'strategic': ['strategic', 'planning', 'roadmap', 'vision', 'long-term'],
+            'adaptability': ['adaptable', 'flexible', 'learn', 'growth mindset', 'evolve']
+        }
         
-        for term in soft_terms:
-            if term in job_lower:
-                soft_keywords.append(term)
+        for skill, patterns in soft_terms_patterns.items():
+            mentions = 0
+            found_patterns = []
+            
+            for pattern in patterns:
+                if pattern in job_lower:
+                    mentions += job_lower.count(pattern)
+                    found_patterns.append(pattern)
+            
+            if mentions > 0:
+                soft_keywords[skill] = {
+                    'mentions': mentions,
+                    'patterns': found_patterns,
+                    'importance': min(8, mentions * 2)
+                }
         
-        # Industry keywords
-        industry_keywords = []
-        industry_terms = [
-            'startup', 'enterprise', 'saas', 'fintech', 'healthcare', 'e-commerce',
-            'mobile', 'web', 'cloud', 'data', 'analytics', 'automation'
-        ]
+        # Industry and context keywords with importance
+        industry_keywords = {}
+        industry_terms = {
+            'startup': ['startup', 'early-stage', 'founding', 'scale-up'],
+            'enterprise': ['enterprise', 'large-scale', 'fortune', 'corporate'],
+            'saas': ['saas', 'software as a service', 'b2b', 'platform'],
+            'fintech': ['fintech', 'financial', 'banking', 'payments'],
+            'healthcare': ['healthcare', 'medical', 'health', 'patient'],
+            'e-commerce': ['e-commerce', 'retail', 'marketplace', 'shopping'],
+            'remote': ['remote', 'distributed', 'work from home', 'virtual'],
+            'performance': ['performance', 'optimization', 'scaling', 'efficiency'],
+            'security': ['security', 'authentication', 'authorization', 'encryption'],
+            'analytics': ['analytics', 'data', 'metrics', 'insights', 'reporting']
+        }
         
-        for term in industry_terms:
-            if term in job_lower:
-                industry_keywords.append(term)
+        for category, terms in industry_terms.items():
+            mentions = 0
+            for term in terms:
+                if term in job_lower:
+                    mentions += job_lower.count(term)
+            
+            if mentions > 0:
+                industry_keywords[category] = {
+                    'mentions': mentions,
+                    'importance': min(6, mentions * 2)
+                }
+        
+        # Extract action verbs for bullet point enhancement
+        action_verbs = self._extract_action_verbs(job_description)
+        
+        # Extract quantifiable metrics expectations
+        metrics_expectations = self._extract_metrics_context(job_description)
         
         return {
             'technical': tech_keywords,
             'soft_skills': soft_keywords,
             'industry': industry_keywords,
-            'total_count': len(tech_keywords) + len(soft_keywords) + len(industry_keywords)
+            'action_verbs': action_verbs,
+            'metrics_expectations': metrics_expectations,
+            'total_importance_score': (
+                sum(kw.get('importance', 0) for kw in tech_keywords.values()) +
+                sum(kw.get('importance', 0) for kw in soft_keywords.values()) +
+                sum(kw.get('importance', 0) for kw in industry_keywords.values())
+            )
         }
+    
+    def _extract_action_verbs(self, job_description: str) -> list:
+        """
+        Extract action verbs from job description to enhance bullet points
+        
+        Args:
+            job_description: The job description text
+            
+        Returns:
+            list: Action verbs found in the job description
+        """
+        # Strong action verbs commonly used in job descriptions
+        strong_action_verbs = [
+            'architect', 'build', 'create', 'develop', 'design', 'implement', 'engineer',
+            'deliver', 'execute', 'manage', 'lead', 'drive', 'optimize', 'improve',
+            'enhance', 'streamline', 'automate', 'integrate', 'collaborate', 'coordinate',
+            'spearhead', 'establish', 'maintain', 'deploy', 'scale', 'monitor',
+            'troubleshoot', 'resolve', 'analyze', 'evaluate', 'research', 'innovate',
+            'transform', 'modernize', 'accelerate', 'achieve', 'exceed', 'increase',
+            'reduce', 'minimize', 'maximize', 'ensure', 'guarantee', 'facilitate',
+            'contribute', 'participate', 'support', 'mentor', 'guide', 'train'
+        ]
+        
+        job_lower = job_description.lower()
+        found_verbs = []
+        
+        for verb in strong_action_verbs:
+            if verb in job_lower:
+                found_verbs.append(verb)
+        
+        return found_verbs
+    
+    def _extract_metrics_context(self, job_description: str) -> list:
+        """
+        Extract metrics and quantification context from job description
+        
+        Args:
+            job_description: The job description text
+            
+        Returns:
+            list: Metrics and quantification patterns found
+        """
+        import re
+        
+        metrics_patterns = [
+            r'\d+\+?\s*years?',  # "5+ years", "3 years"
+            r'\d+\+?\s*million',  # "1+ million"
+            r'\d+\+?\s*billion',  # "1+ billion"
+            r'\d+\+?\s*%',  # "99%", "15%"
+            r'\d+\+?\s*users?',  # "1000+ users"
+            r'\d+\+?\s*requests?',  # "10000+ requests"
+            r'\d+\+?\s*transactions?',  # "1M+ transactions"
+            r'\d+\+?\s*customers?',  # "500+ customers"
+            r'scale\s+to\s+\d+',  # "scale to 1000"
+            r'handle\s+\d+',  # "handle 5000"
+            r'support\s+\d+',  # "support 10000"
+        ]
+        
+        # Context words that suggest quantifiable achievements
+        metrics_context = [
+            'performance', 'efficiency', 'throughput', 'latency', 'uptime',
+            'availability', 'scalability', 'growth', 'increase', 'improve',
+            'reduce', 'optimize', 'accelerate', 'users', 'traffic', 'load',
+            'volume', 'capacity', 'speed', 'time', 'cost', 'revenue'
+        ]
+        
+        found_metrics = []
+        job_lower = job_description.lower()
+        
+        # Extract numerical patterns
+        for pattern in metrics_patterns:
+            matches = re.findall(pattern, job_lower)
+            found_metrics.extend(matches)
+        
+        # Extract context words
+        for context in metrics_context:
+            if context in job_lower:
+                found_metrics.append(context)
+        
+        return list(set(found_metrics))  # Remove duplicates
+    
+    def identify_irrelevant_sections(self, resume_text: str, job_keywords: dict) -> list:
+        """
+        Identify sections or content that might be irrelevant to the job
+        
+        Args:
+            resume_text: The resume text
+            job_keywords: Keywords extracted from job description
+            
+        Returns:
+            list: Sections/content that could be considered irrelevant
+        """
+        irrelevant_indicators = []
+        resume_lower = resume_text.lower()
+        
+        # Hobby/personal interest indicators that might not be relevant
+        personal_interests = [
+            'basketball', 'football', 'soccer', 'tennis', 'golf', 'swimming',
+            'hiking', 'cooking', 'baking', 'reading', 'traveling', 'photography',
+            'music', 'guitar', 'piano', 'singing', 'dancing', 'painting',
+            'knitting', 'gardening', 'yoga', 'meditation', 'volunteering'
+        ]
+        
+        # Check for personal interests that don't relate to job
+        tech_job = any(kw in job_keywords.get('technical', {}) for kw in ['python', 'javascript', 'react'])
+        
+        for interest in personal_interests:
+            if interest in resume_lower:
+                # Only flag as irrelevant if it's truly unrelated to the job context
+                if tech_job and interest not in ['volunteering', 'teaching', 'mentoring']:
+                    irrelevant_indicators.append(f"Personal interest: {interest}")
+        
+        # Check for outdated or overly junior experiences (if applying for senior role)
+        job_requires_senior = any(term in str(job_keywords) for term in ['senior', 'lead', '5+ years'])
+        
+        if job_requires_senior:
+            junior_indicators = ['intern', 'entry-level', 'junior', 'assistant']
+            for indicator in junior_indicators:
+                if indicator in resume_lower:
+                    irrelevant_indicators.append(f"Junior-level reference: {indicator}")
+        
+        # Check for technology mismatches
+        job_tech = set(job_keywords.get('technical', {}).keys())
+        outdated_tech = ['flash', 'silverlight', 'internet explorer', 'jquery', 'php4']
+        
+        for tech in outdated_tech:
+            if tech in resume_lower and tech not in job_tech:
+                irrelevant_indicators.append(f"Potentially outdated technology: {tech}")
+        
+        return irrelevant_indicators
+    
+    def enhance_bullet_points_with_action_verbs(self, resume_text: str, action_verbs: list) -> str:
+        """
+        Enhance resume bullet points with stronger action verbs
+        
+        Args:
+            resume_text: The resume text
+            action_verbs: Action verbs from job description
+            
+        Returns:
+            str: Resume with enhanced action verbs
+        """
+        # Mapping of weak verbs to stronger alternatives
+        verb_improvements = {
+            'responsible for': 'led',
+            'worked on': 'developed',
+            'helped': 'collaborated',
+            'did': 'executed',
+            'made': 'created',
+            'used': 'leveraged',
+            'was involved': 'contributed',
+            'participated in': 'drove',
+            'assisted': 'supported',
+            'handled': 'managed'
+        }
+        
+        enhanced_resume = resume_text
+        
+        # Replace weak phrases with stronger action verbs
+        for weak, strong in verb_improvements.items():
+            # Use job-specific action verbs when available
+            if action_verbs and any(verb in enhanced_resume.lower() for verb in action_verbs):
+                # Prioritize action verbs from the job description
+                job_verb = next((verb for verb in action_verbs if verb in enhanced_resume.lower()), strong)
+                enhanced_resume = enhanced_resume.replace(weak, job_verb)
+            else:
+                enhanced_resume = enhanced_resume.replace(weak, strong)
+        
+        return enhanced_resume
     
     def analyze_resume_match(self, resume_text: str, job_description: str) -> dict:
         """
-        Analyze how well the resume matches the job description
+        Analyze how well the resume matches the job description with enhanced ATS scoring
         
         Args:
             resume_text: The resume text
             job_description: The job description
             
         Returns:
-            dict: Match analysis results
+            dict: Enhanced match analysis results with ATS optimization insights
         """
         job_keywords = self.extract_job_keywords(job_description)
         resume_lower = resume_text.lower()
         
         matches = {
-            'technical': 0,
-            'soft_skills': 0,
-            'industry': 0,
-            'missing_keywords': []
+            'technical_matches': {},
+            'soft_skill_matches': {},
+            'industry_matches': {},
+            'missing_high_priority': [],
+            'missing_medium_priority': [],
+            'action_verb_score': 0,
+            'quantification_score': 0,
+            'irrelevant_content': [],
+            'ats_optimization_tips': []
         }
         
-        # Check technical keyword matches
-        for keyword in job_keywords['technical']:
-            if keyword in resume_lower:
-                matches['technical'] += 1
+        # Enhanced technical keyword matching with importance weighting
+        total_tech_importance = 0
+        matched_tech_importance = 0
+        
+        for keyword, data in job_keywords['technical'].items():
+            total_tech_importance += data['importance']
+            
+            # Check for exact keyword or its variations
+            keyword_found = False
+            matched_variations = []
+            
+            for variation in data['variations']:
+                if variation.lower() in resume_lower:
+                    keyword_found = True
+                    matched_variations.append(variation)
+            
+            if keyword_found:
+                matched_tech_importance += data['importance']
+                matches['technical_matches'][keyword] = {
+                    'matched_variations': matched_variations,
+                    'importance': data['importance']
+                }
             else:
-                matches['missing_keywords'].append(keyword)
+                # Categorize missing keywords by importance
+                if data['importance'] >= 8:
+                    matches['missing_high_priority'].append(keyword)
+                elif data['importance'] >= 5:
+                    matches['missing_medium_priority'].append(keyword)
         
-        # Check soft skills matches
-        for keyword in job_keywords['soft_skills']:
-            if keyword in resume_lower:
-                matches['soft_skills'] += 1
+        # Enhanced soft skills matching
+        total_soft_importance = 0
+        matched_soft_importance = 0
+        
+        for skill, data in job_keywords['soft_skills'].items():
+            total_soft_importance += data['importance']
+            
+            skill_found = any(pattern in resume_lower for pattern in data['patterns'])
+            if skill_found:
+                matched_soft_importance += data['importance']
+                matches['soft_skill_matches'][skill] = data['importance']
             else:
-                matches['missing_keywords'].append(keyword)
+                if data['importance'] >= 6:
+                    matches['missing_high_priority'].append(f"{skill} (soft skill)")
         
-        # Check industry matches
-        for keyword in job_keywords['industry']:
-            if keyword in resume_lower:
-                matches['industry'] += 1
-            else:
-                matches['missing_keywords'].append(keyword)
+        # Industry context matching
+        total_industry_importance = 0
+        matched_industry_importance = 0
         
-        total_matches = matches['technical'] + matches['soft_skills'] + matches['industry']
-        total_possible = job_keywords['total_count']
+        for category, data in job_keywords['industry'].items():
+            total_industry_importance += data['importance']
+            
+            if category in ['remote', 'startup', 'enterprise']:  # Context-based categories
+                context_terms = {
+                    'remote': ['remote', 'distributed', 'virtual team'],
+                    'startup': ['startup', 'early-stage', 'founding'],
+                    'enterprise': ['enterprise', 'large-scale', 'corporate']
+                }
+                
+                if any(term in resume_lower for term in context_terms.get(category, [])):
+                    matched_industry_importance += data['importance']
+                    matches['industry_matches'][category] = data['importance']
         
-        matches['match_percentage'] = (total_matches / total_possible * 100) if total_possible > 0 else 0
-        matches['optimization_score'] = min(100, matches['match_percentage'] + 10)  # Bonus for good structure
+        # Action verb analysis
+        action_verbs_in_job = job_keywords['action_verbs']
+        action_verbs_in_resume = [verb for verb in action_verbs_in_job if verb in resume_lower]
+        matches['action_verb_score'] = (len(action_verbs_in_resume) / max(1, len(action_verbs_in_job))) * 100
+        
+        # Quantification analysis
+        metrics_expected = job_keywords['metrics_expectations']
+        # Simple check for numbers and percentages in resume
+        import re
+        numbers_in_resume = len(re.findall(r'\d+[%\+]?', resume_text))
+        matches['quantification_score'] = min(100, numbers_in_resume * 10)  # Score based on quantified achievements
+        
+        # Identify irrelevant content
+        matches['irrelevant_content'] = self.identify_irrelevant_sections(resume_text, job_keywords)
+        
+        # Calculate overall ATS optimization score
+        total_possible_importance = total_tech_importance + total_soft_importance + total_industry_importance
+        total_matched_importance = matched_tech_importance + matched_soft_importance + matched_industry_importance
+        
+        base_match_percentage = (total_matched_importance / max(1, total_possible_importance)) * 100
+        
+        # Bonus factors for ATS optimization
+        action_verb_bonus = min(20, matches['action_verb_score'] * 0.2)
+        quantification_bonus = min(15, matches['quantification_score'] * 0.15)
+        relevance_penalty = min(10, len(matches['irrelevant_content']) * 2)  # Penalty for irrelevant content
+        
+        ats_score = min(100, base_match_percentage + action_verb_bonus + quantification_bonus - relevance_penalty)
+        
+        matches['match_percentage'] = base_match_percentage
+        matches['ats_optimization_score'] = ats_score
+        
+        # Generate ATS optimization tips
+        if len(matches['missing_high_priority']) > 0:
+            matches['ats_optimization_tips'].append(
+                f"HIGH PRIORITY: Include these critical keywords: {', '.join(matches['missing_high_priority'][:3])}"
+            )
+        
+        if matches['action_verb_score'] < 50:
+            matches['ats_optimization_tips'].append(
+                "IMPROVE: Use stronger action verbs from the job description in your bullet points"
+            )
+        
+        if matches['quantification_score'] < 40:
+            matches['ats_optimization_tips'].append(
+                "QUANTIFY: Add more numbers, percentages, and measurable achievements"
+            )
+        
+        if len(matches['irrelevant_content']) > 2:
+            matches['ats_optimization_tips'].append(
+                f"REMOVE: Consider removing irrelevant content to make room for job-relevant details"
+            )
         
         return matches
 

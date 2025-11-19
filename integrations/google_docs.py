@@ -41,24 +41,36 @@ class GoogleDocsClient:
             # If there are no (valid) credentials available, let the user log in
             if not self.creds or not self.creds.valid:
                 if self.creds and self.creds.expired and self.creds.refresh_token:
-                    # Refresh the token
-                    self.creds.refresh(Request())
+                    try:
+                        print("🔄 Refreshing expired Google API token...")
+                        # Refresh the token
+                        self.creds.refresh(Request())
+                        print("✅ Token refreshed successfully!")
+                        
+                        # Save the refreshed token
+                        with open(self.token_path, 'w') as token:
+                            token.write(self.creds.to_json())
+                            
+                    except Exception as refresh_error:
+                        print(f"❌ Token refresh failed: {str(refresh_error)}")
+                        print("🔑 Initiating new authentication flow...")
+                        
+                        # Remove the old token file since it's invalid
+                        if os.path.exists(self.token_path):
+                            os.remove(self.token_path)
+                        
+                        # Start fresh OAuth flow
+                        self.creds = None
+                        self._start_oauth_flow()
                 else:
-                    # Run OAuth flow
-                    if not os.path.exists(self.credentials_path):
-                        raise FileNotFoundError(
-                            f"Google credentials file not found at {self.credentials_path}. "
-                            "Please download your OAuth 2.0 credentials from Google Cloud Console."
-                        )
-                    
-                    flow = InstalledAppFlow.from_client_secrets_file(
-                        self.credentials_path, self.scopes
-                    )
-                    self.creds = flow.run_local_server(port=0)
+                    # No valid credentials, start OAuth flow
+                    print("🔑 Starting Google API authentication...")
+                    self._start_oauth_flow()
                 
-                # Save the credentials for the next run
-                with open(self.token_path, 'w') as token:
-                    token.write(self.creds.to_json())
+                # Save the credentials for the next run (if not already saved)
+                if self.creds and not os.path.exists(self.token_path):
+                    with open(self.token_path, 'w') as token:
+                        token.write(self.creds.to_json())
             
             # Build the service
             self.service = build('docs', 'v1', credentials=self.creds)
@@ -66,6 +78,69 @@ class GoogleDocsClient:
         
         except Exception as e:
             raise Exception(f"Google Docs authentication failed: {str(e)}")
+    
+    def _start_oauth_flow(self):
+        """Start the OAuth 2.0 flow for authentication"""
+        if not os.path.exists(self.credentials_path):
+            raise FileNotFoundError(
+                f"Google credentials file not found at {self.credentials_path}. "
+                "Please download your OAuth 2.0 credentials from Google Cloud Console."
+            )
+        
+        flow = InstalledAppFlow.from_client_secrets_file(
+            self.credentials_path, self.scopes
+        )
+        print("🌐 Opening browser for Google authentication...")
+        self.creds = flow.run_local_server(port=0)
+        print("✅ Authentication successful!")
+    
+    def clear_invalid_token(self):
+        """Remove invalid token file to force re-authentication"""
+        if os.path.exists(self.token_path):
+            try:
+                os.remove(self.token_path)
+                print("🗑️  Removed invalid token file")
+            except OSError as e:
+                print(f"⚠️  Warning: Could not remove token file: {e}")
+    
+    def check_authentication_status(self) -> Dict[str, Any]:
+        """
+        Check the current authentication status
+        
+        Returns:
+            Dict with authentication status information
+        """
+        status = {
+            'authenticated': False,
+            'token_exists': False,
+            'token_valid': False,
+            'token_expired': False,
+            'needs_refresh': False,
+            'needs_reauth': False
+        }
+        
+        try:
+            # Check if token file exists
+            if os.path.exists(self.token_path):
+                status['token_exists'] = True
+                
+                # Load credentials
+                creds = Credentials.from_authorized_user_file(self.token_path, self.scopes)
+                
+                if creds:
+                    status['token_valid'] = creds.valid
+                    status['token_expired'] = creds.expired if hasattr(creds, 'expired') else False
+                    status['needs_refresh'] = creds.expired and creds.refresh_token
+                    status['needs_reauth'] = not creds.valid and not (creds.expired and creds.refresh_token)
+                    status['authenticated'] = creds.valid
+            else:
+                status['needs_reauth'] = True
+                
+        except Exception as e:
+            print(f"⚠️  Error checking authentication status: {e}")
+            status['needs_reauth'] = True
+        
+        return status
     
     def create_document(self, title: str) -> Dict[str, Any]:
         """
@@ -338,7 +413,7 @@ class GoogleDocsClient:
         headers = [
             'PROFESSIONAL SUMMARY', 'TECHNICAL SKILLS', 'PROFESSIONAL EXPERIENCE',
             'EDUCATION', 'PROJECTS', 'TECHNICAL PROJECTS', 'CERTIFICATIONS',
-            'CERTIFICATIONS & ACHIEVEMENTS', 'ADDITIONAL INFORMATION', 'SKILLS',
+            'CERTIFICATIONS & ACHIEVEMENTS', 'SKILLS',
             'EXPERIENCE', 'SUMMARY', 'OBJECTIVE', 'ACHIEVEMENTS', 'AWARDS'
         ]
         
@@ -430,6 +505,97 @@ class GoogleDocsClient:
             # If text insertion fails, we should clean up the empty document
             # For now, we'll just raise the exception
             raise Exception(f"Failed to create resume document: {str(e)}")
+    
+    def create_cover_letter_document(self, title: str, cover_letter_text: str) -> Dict[str, Any]:
+        """
+        Create a Google Docs document with cover letter content
+        
+        Args:
+            title: The title for the document
+            cover_letter_text: The cover letter text content
+            
+        Returns:
+            Dict[str, Any]: Document metadata including document ID and URL
+            
+        Raises:
+            Exception: If document creation or text insertion fails
+        """
+        # Create the document
+        doc_info = self.create_document(title)
+        
+        try:
+            # Insert the cover letter text
+            self.insert_text(doc_info['document_id'], cover_letter_text)
+            
+            # Apply basic formatting (no special resume formatting needed for cover letters)
+            self._format_cover_letter(doc_info['document_id'], cover_letter_text)
+            
+            return doc_info
+        
+        except Exception as e:
+            # If text insertion fails, we should clean up the empty document
+            # For now, we'll just raise the exception
+            raise Exception(f"Failed to create cover letter document: {str(e)}")
+    
+    def _format_cover_letter(self, document_id: str, cover_letter_text: str) -> bool:
+        """
+        Apply basic formatting to cover letter document
+        
+        Args:
+            document_id: The ID of the document
+            cover_letter_text: The cover letter text to format
+            
+        Returns:
+            bool: True if formatting was successful
+            
+        Raises:
+            Exception: If formatting fails
+        """
+        if not self.service:
+            raise Exception("Google Docs service not initialized. Please authenticate first.")
+        
+        try:
+            formatting_requests = []
+            
+            lines = cover_letter_text.split('\n')
+            current_pos = 1
+            
+            for line in lines:
+                line_length = len(line)
+                
+                if line_length > 0:
+                    # Add spacing between paragraphs
+                    formatting_requests.append({
+                        'updateParagraphStyle': {
+                            'range': {
+                                'startIndex': current_pos,
+                                'endIndex': current_pos + line_length
+                            },
+                            'paragraphStyle': {
+                                'spaceBelow': {
+                                    'magnitude': 6,
+                                    'unit': 'PT'
+                                }
+                            },
+                            'fields': 'spaceBelow'
+                        }
+                    })
+                
+                current_pos += line_length + 1  # +1 for newline character
+            
+            # Apply formatting if we have requests
+            if formatting_requests:
+                self.service.documents().batchUpdate(
+                    documentId=document_id,
+                    body={'requests': formatting_requests}
+                ).execute()
+            
+            return True
+        
+        except HttpError as e:
+            raise Exception(f"Failed to format cover letter document: {str(e)}")
+        except Exception as e:
+            raise Exception(f"Unexpected error formatting cover letter: {str(e)}")
     
     def test_connection(self) -> bool:
         """

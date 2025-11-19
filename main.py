@@ -18,19 +18,26 @@ from agents.orchestrator import ResumeAgentOrchestrator
 @click.option('--test', is_flag=True, help='Test all integrations without processing')
 @click.option('--job-file', type=click.Path(exists=True), help='Path to file containing job description')
 @click.option('--no-cover-letter', is_flag=True, help='Skip cover letter generation')
+@click.option('--no-qa', is_flag=True, help='Skip Q&A session')
 @click.option('--user-name', type=str, help='Override user name for cover letter')
+@click.option('--question', type=str, help='Ask a single question and exit')
+@click.option('--ats-report', is_flag=True, help='Generate ATS optimization report only')
 @click.version_option(version='1.0.0', prog_name='Resume Agent')
 def main(
     test: bool,
     job_file: Optional[str],
     no_cover_letter: bool,
-    user_name: Optional[str]
+    no_qa: bool,
+    user_name: Optional[str],
+    question: Optional[str],
+    ats_report: bool
 ):
     """
     Resume & Cover Letter Agent
     
     Automatically refine your resume and generate cover letters tailored to specific job descriptions.
-    The refined resume is uploaded to Google Docs, and an optional cover letter is displayed in the terminal.
+    The refined resume is uploaded to Google Docs, with optional cover letter generation and 
+    interactive Q&A session for interview preparation.
     """
     formatter = OutputFormatter()
     
@@ -74,6 +81,107 @@ def main(
             formatter.print_error(error_msg)
             sys.exit(1)
         
+        # Handle single question mode
+        if question:
+            formatter.print_info("Single question mode - generating resume first...")
+            
+            # Generate resume for context
+            try:
+                results = orchestrator.process_job_application(
+                    job_description=job_description,
+                    generate_cover_letter=False,
+                    user_name=user_name
+                )
+                
+                # Answer the single question
+                formatter.print_header("SINGLE QUESTION ANSWER")
+                formatter.print_processing(f"Generating answer for: '{question}'")
+                
+                answer = orchestrator.quick_qa(
+                    question=question,
+                    job_description=job_description,
+                    resume_text=results['refined_resume']
+                )
+                
+                formatter.print_section(f"Q: {question}", answer)
+                formatter.print_success("Single question answered successfully!")
+                sys.exit(0)
+                
+            except Exception as e:
+                formatter.print_error(f"Failed to answer question: {str(e)}")
+                sys.exit(1)
+        
+        # Handle ATS report mode
+        if ats_report:
+            formatter.print_info("ATS optimization report mode - analyzing current resume against job description...")
+            
+            try:
+                # Load base resume for analysis
+                base_resume = orchestrator.resume_agent.load_base_resume()
+                
+                # Generate comprehensive ATS report
+                formatter.print_header("ATS OPTIMIZATION REPORT")
+                formatter.print_processing("Analyzing job requirements and resume compatibility...")
+                
+                ats_report_data = orchestrator.generate_ats_report(job_description, base_resume)
+                
+                # Display detailed ATS report
+                formatter.print_section("Job Analysis Summary", "")
+                formatter.print_info(f"• Critical technical skills identified: {ats_report_data['job_analysis']['critical_technical_skills']}")
+                formatter.print_info(f"• Total keyword importance score: {ats_report_data['job_analysis']['total_keywords_identified']}")
+                formatter.print_info(f"• Action verbs in job posting: {ats_report_data['job_analysis']['action_verbs_in_job']}")
+                
+                formatter.print_section("Resume Performance", "")
+                ats_score = ats_report_data['resume_performance']['ats_score']
+                match_pct = ats_report_data['resume_performance']['keyword_match_percentage']
+                
+                if ats_score >= 85:
+                    formatter.print_success(f"🚀 Excellent ATS Score: {ats_score:.1f}% (Keyword Match: {match_pct:.1f}%)")
+                elif ats_score >= 70:
+                    formatter.print_info(f"✅ Good ATS Score: {ats_score:.1f}% (Keyword Match: {match_pct:.1f}%)")
+                else:
+                    formatter.print_warning(f"⚠️  Needs Improvement: {ats_score:.1f}% (Keyword Match: {match_pct:.1f}%)")
+                
+                formatter.print_info(f"• Technical keywords matched: {ats_report_data['resume_performance']['technical_keywords_matched']}")
+                formatter.print_info(f"• Missing critical keywords: {ats_report_data['resume_performance']['missing_critical_keywords']}")
+                formatter.print_info(f"• Action verb alignment: {ats_report_data['resume_performance']['action_verb_alignment']:.1f}%")
+                formatter.print_info(f"• Quantification strength: {ats_report_data['resume_performance']['quantification_strength']:.1f}%")
+                
+                # Show improvement opportunities
+                improvements = ats_report_data['improvement_opportunities']
+                if improvements['high_priority_additions']:
+                    formatter.print_section("High Priority Improvements", "")
+                    formatter.print_warning("🔴 Add these critical keywords:")
+                    for keyword in improvements['high_priority_additions']:
+                        formatter.print_warning(f"   • {keyword}")
+                
+                if improvements['content_to_consider_removing']:
+                    formatter.print_warning("🗑️  Consider removing irrelevant content:")
+                    for content in improvements['content_to_consider_removing']:
+                        formatter.print_warning(f"   • {content}")
+                
+                if improvements['optimization_tips']:
+                    formatter.print_section("ATS Optimization Tips", "")
+                    for tip in improvements['optimization_tips']:
+                        formatter.print_info(f"• {tip}")
+                
+                # Show competitive advantages
+                advantages = ats_report_data['competitive_advantages']
+                formatter.print_section("Competitive Advantages", "")
+                if advantages['unique_technical_combinations']:
+                    formatter.print_success("💪 Strong technical skill matches:")
+                    for skill in advantages['unique_technical_combinations']:
+                        formatter.print_success(f"   • {skill}")
+                
+                formatter.print_success("ATS optimization report completed successfully!")
+                formatter.print_info("💡 Tip: Use 'python main.py --job-file [file]' to generate an optimized resume based on this analysis.")
+                
+                sys.exit(0)
+                
+            except Exception as e:
+                formatter.print_error(f"Failed to generate ATS report: {str(e)}")
+                sys.exit(1)
+        
         # Get cover letter preference
         if no_cover_letter:
             generate_cover_letter = False
@@ -100,6 +208,30 @@ def main(
                     f"Processing took {results['processing_time']:.1f} seconds. "
                     "Consider optimizing your OpenAI API settings for faster responses."
                 )
+            
+            # Run Q&A session if enabled
+            if not no_qa and results['refined_resume']:
+                formatter.print_info("\n" + "="*60)
+                run_qa = InputHandler.get_user_confirmation(
+                    "Would you like to start an interview Q&A session?", 
+                    default=True
+                )
+                
+                if run_qa:
+                    try:
+                        qa_results = orchestrator.run_qa_session(
+                            job_description=job_description,
+                            resume_text=results['refined_resume'],
+                            interactive=True
+                        )
+                        
+                        if qa_results.get('session_completed'):
+                            formatter.print_success("Q&A session completed successfully!")
+                        
+                    except Exception as e:
+                        formatter.print_error(f"Q&A session failed: {str(e)}")
+                else:
+                    formatter.print_info("Q&A session skipped. You can run it later with the --question flag.")
             
         except Exception as e:
             formatter.print_error(f"Process failed: {str(e)}")

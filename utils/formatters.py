@@ -116,14 +116,30 @@ class OutputFormatter:
         Returns:
             str: Formatted document title
         """
-        # Clean up company name and job title
-        company_clean = company_name.strip().title() if company_name else "Company"
-        job_clean = job_title.strip().title() if job_title else "Position"
+        # Clean up job title and format for filename
+        job_clean = job_title.strip().replace(" ", "_").replace("-", "_") if job_title else "Position"
+        # Remove special characters and convert to uppercase
+        job_clean = "".join(c for c in job_clean if c.isalnum() or c == "_").upper()
         
-        # Get current date
-        current_date = datetime.now().strftime("%Y-%m-%d")
+        return f"Joshua_Inyang_{job_clean}"
+    
+    @staticmethod
+    def format_cover_letter_title(company_name: str) -> str:
+        """
+        Format cover letter document title for Google Docs
         
-        return f"{company_clean} - {job_clean} - Resume - {current_date}"
+        Args:
+            company_name: Name of the company
+            
+        Returns:
+            str: Formatted cover letter document title
+        """
+        # Clean up company name and format for filename
+        company_clean = company_name.strip().replace(" ", "_").replace("-", "_") if company_name else "Company"
+        # Remove special characters and convert to title case
+        company_clean = "".join(c for c in company_clean if c.isalnum() or c == "_").title()
+        
+        return f"{company_clean}_Cover_Letter"
     
     @staticmethod
     def extract_company_and_job_title(job_description: str) -> tuple[str, str]:

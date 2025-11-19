@@ -248,7 +248,7 @@ Link: https://docs.google.com/document/d/abc123.../edit
 
 ### Cover Letter
 
-A professional 3-4 paragraph cover letter tailored to the job and your experience.
+A professional 2-3 paragraph cover letter tailored to the job and your experience.
 
 ## 🧪 Testing
 
@@ -305,4 +305,3 @@ If you encounter issues:
 ---
 
 **Happy job hunting! 🎯**
-
