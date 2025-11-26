@@ -51,8 +51,8 @@ def main(
         # Test mode - just check integrations
         if test:
             formatter.print_info("Running integration tests...")
-            all_good = orchestrator.print_integration_status()
-            sys.exit(0 if all_good else 1)
+            all_required_working = orchestrator.print_integration_status()
+            sys.exit(0 if all_required_working else 1)
         
         # Get job description
         if job_file:
@@ -305,7 +305,11 @@ def setup():
     # Test integrations
     try:
         orchestrator = ResumeAgentOrchestrator()
-        orchestrator.print_integration_status()
+        all_required_working = orchestrator.print_integration_status()
+        if all_required_working:
+            formatter.print_success("Setup validation passed!")
+        else:
+            formatter.print_warning("Some required components need attention. See status above.")
     except Exception as e:
         formatter.print_error(f"Integration test failed: {str(e)}")
     

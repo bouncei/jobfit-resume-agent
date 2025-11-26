@@ -79,20 +79,32 @@ class ResumeAgentOrchestrator:
             # Display ATS optimization insights
             self.display_ats_insights(ats_analysis)
             
-            # Step 2: Upload to Google Docs
-            self.formatter.print_step_progress(2, 4, "Uploading resume to Google Docs")
-            self.formatter.print_processing("Authenticating with Google Docs and creating document")
+            # Step 2: Upload to Google Docs (Optional)
+            results['google_docs_info'] = None
+            google_docs_available = self._check_google_docs_availability()
             
-            # Extract company and job title for document naming
-            company_name, job_title = self.formatter.extract_company_and_job_title(job_description)
-            doc_title = self.formatter.format_document_title(company_name, job_title)
-            
-            # Authenticate and create document
-            self.google_docs_client.authenticate()
-            google_docs_info = self.google_docs_client.create_resume_document(doc_title, refined_resume)
-            
-            results['google_docs_info'] = google_docs_info
-            self.formatter.print_success("Resume uploaded to Google Docs")
+            if google_docs_available:
+                try:
+                    self.formatter.print_step_progress(2, 4, "Uploading resume to Google Docs")
+                    self.formatter.print_processing("Authenticating with Google Docs and creating document")
+                    
+                    # Extract company and job title for document naming
+                    company_name, job_title = self.formatter.extract_company_and_job_title(job_description)
+                    doc_title = self.formatter.format_document_title(company_name, job_title)
+                    
+                    # Authenticate and create document
+                    self.google_docs_client.authenticate()
+                    google_docs_info = self.google_docs_client.create_resume_document(doc_title, refined_resume)
+                    
+                    results['google_docs_info'] = google_docs_info
+                    self.formatter.print_success("Resume uploaded to Google Docs")
+                
+                except Exception as e:
+                    self.formatter.print_warning(f"Google Docs upload failed: {str(e)}")
+                    self.formatter.print_info("💡 Resume will be displayed in terminal instead")
+            else:
+                self.formatter.print_step_progress(2, 4, "Skipping Google Docs upload (credentials not configured)")
+                self.formatter.print_info("💡 Google Docs integration is optional. Resume will be displayed below.")
             
             # Step 3: Generate cover letter (if requested)
             if generate_cover_letter:
@@ -120,20 +132,25 @@ class ResumeAgentOrchestrator:
                     default=True
                 )
                 
-                if save_to_docs:
-                    self.formatter.print_processing("Uploading cover letter to Google Docs")
+                if save_to_docs and google_docs_available:
+                    try:
+                        self.formatter.print_processing("Uploading cover letter to Google Docs")
+                        
+                        # Create cover letter document title
+                        cover_letter_title = self.formatter.format_cover_letter_title(company_name)
+                        
+                        # Create cover letter document
+                        cover_letter_docs_info = self.google_docs_client.create_cover_letter_document(
+                            cover_letter_title, 
+                            cover_letter
+                        )
+                        
+                        results['cover_letter_docs_info'] = cover_letter_docs_info
+                        self.formatter.print_success("Cover letter uploaded to Google Docs")
                     
-                    # Create cover letter document title
-                    cover_letter_title = self.formatter.format_cover_letter_title(company_name)
-                    
-                    # Create cover letter document
-                    cover_letter_docs_info = self.google_docs_client.create_cover_letter_document(
-                        cover_letter_title, 
-                        cover_letter
-                    )
-                    
-                    results['cover_letter_docs_info'] = cover_letter_docs_info
-                    self.formatter.print_success("Cover letter uploaded to Google Docs")
+                    except Exception as e:
+                        self.formatter.print_warning(f"Cover letter Google Docs upload failed: {str(e)}")
+                        self.formatter.print_info("💡 Cover letter is displayed above and can be copied")
             else:
                 self.formatter.print_step_progress(3, 4, "Skipping cover letter generation")
             
@@ -197,56 +214,109 @@ class ResumeAgentOrchestrator:
             processing_time=results['processing_time']
         )
     
-    def test_all_integrations(self) -> Dict[str, bool]:
+    def test_all_integrations(self) -> Dict[str, Dict[str, Any]]:
         """
         Test all integrations to ensure they're working
         
         Returns:
-            Dict[str, bool]: Test results for each integration
+            Dict[str, Dict[str, Any]]: Test results for each integration with status and metadata
         """
         test_results = {}
         
-        # Test OpenAI connection
+        # Test OpenAI connection (Required)
         try:
-            test_results['openai'] = self.resume_agent.openai_client.test_connection()
-        except Exception:
-            test_results['openai'] = False
+            openai_works = self.resume_agent.openai_client.test_connection()
+            test_results['openai'] = {
+                'status': openai_works,
+                'required': True,
+                'message': 'Connected' if openai_works else 'Failed to connect'
+            }
+        except Exception as e:
+            test_results['openai'] = {
+                'status': False,
+                'required': True,
+                'message': f'Failed: {str(e)}'
+            }
         
-        # Test Google Docs connection
-        try:
-            test_results['google_docs'] = self.google_docs_client.test_connection()
-        except Exception:
-            test_results['google_docs'] = False
-        
-        # Test base resume loading
+        # Test base resume loading (Required)
         try:
             self.resume_agent.load_base_resume()
-            test_results['base_resume'] = True
-        except Exception:
-            test_results['base_resume'] = False
+            test_results['base_resume'] = {
+                'status': True,
+                'required': True,
+                'message': 'Found and loaded successfully'
+            }
+        except Exception as e:
+            test_results['base_resume'] = {
+                'status': False,
+                'required': True,
+                'message': f'Failed: {str(e)}'
+            }
+        
+        # Test Google Docs connection (Optional)
+        google_docs_available = self._check_google_docs_availability()
+        if google_docs_available:
+            try:
+                google_docs_works = self.google_docs_client.test_connection()
+                test_results['google_docs'] = {
+                    'status': google_docs_works,
+                    'required': False,
+                    'message': 'Connected - Google Docs integration enabled' if google_docs_works else 'Authentication failed'
+                }
+            except Exception as e:
+                test_results['google_docs'] = {
+                    'status': False,
+                    'required': False,
+                    'message': f'Failed: {str(e)}'
+                }
+        else:
+            test_results['google_docs'] = {
+                'status': False,
+                'required': False,
+                'message': 'Not configured (credentials.json not found) - App will work without it'
+            }
         
         return test_results
     
-    def print_integration_status(self) -> None:
-        """Print the status of all integrations"""
+    def print_integration_status(self) -> bool:
+        """
+        Print the status of all integrations
+        
+        Returns:
+            bool: True if all required integrations are working
+        """
         self.formatter.print_header("INTEGRATION STATUS CHECK")
         
         test_results = self.test_all_integrations()
         
-        for integration, status in test_results.items():
-            if status:
-                self.formatter.print_success(f"{integration.replace('_', ' ').title()}: Connected")
-            else:
-                self.formatter.print_error(f"{integration.replace('_', ' ').title()}: Failed")
+        # Display required integrations first
+        self.formatter.print_info("REQUIRED INTEGRATIONS:")
+        required_working = True
+        for integration, details in test_results.items():
+            if details['required']:
+                if details['status']:
+                    self.formatter.print_success(f"✅ {integration.replace('_', ' ').title()}: {details['message']}")
+                else:
+                    self.formatter.print_error(f"❌ {integration.replace('_', ' ').title()}: {details['message']}")
+                    required_working = False
         
-        all_good = all(test_results.values())
+        # Display optional integrations
+        self.formatter.print_info("\nOPTIONAL INTEGRATIONS:")
+        for integration, details in test_results.items():
+            if not details['required']:
+                if details['status']:
+                    self.formatter.print_success(f"✅ {integration.replace('_', ' ').title()}: {details['message']}")
+                else:
+                    self.formatter.print_info(f"⚪ {integration.replace('_', ' ').title()}: {details['message']}")
         
-        if all_good:
-            self.formatter.print_success("All integrations are working correctly!")
+        # Print summary
+        if required_working:
+            self.formatter.print_success("\n🎉 All required integrations are working! The app is ready to use.")
+            if not test_results.get('google_docs', {}).get('status', False):
+                self.formatter.print_info("💡 Google Docs integration is disabled but the app will work perfectly without it.")
         else:
-            self.formatter.print_warning("Some integrations need attention. Please check your configuration.")
+            self.formatter.print_error("\n❌ Some required integrations are not working. Please fix the issues above.")
         
-        return all_good
     
     def run_qa_session(
         self, 
@@ -501,4 +571,28 @@ class ResumeAgentOrchestrator:
         }
         
         return report
+    
+    def _check_google_docs_availability(self) -> bool:
+        """
+        Check if Google Docs integration is available and properly configured
+        
+        Returns:
+            bool: True if Google Docs integration is available
+        """
+        import os
+        
+        # Check if credentials file exists
+        if not os.path.exists(Config.GOOGLE_CREDENTIALS_PATH):
+            return False
+        
+        # Check if credentials file is readable and not empty
+        try:
+            with open(Config.GOOGLE_CREDENTIALS_PATH, 'r') as f:
+                content = f.read().strip()
+                if not content:
+                    return False
+        except Exception:
+            return False
+        
+        return True
 

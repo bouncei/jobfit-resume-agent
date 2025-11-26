@@ -1,0 +1,43 @@
+[Your Name]
+[Your Phone Number] | [Your Email] | [Your LinkedIn Profile] | [Your GitHub Profile]
+
+Summary
+---
+[A brief, powerful summary of your skills and experience. Tailor this to the job you are applying for.]
+
+Experience
+---
+**[Job Title]** | [Company Name] | [City, State] | [Start Date] – [End Date]
+*   [Accomplishment or responsibility. Use action verbs and quantify your results whenever possible.]
+*   [Accomplishment or responsibility.]
+*   [Accomplishment or responsibility.]
+
+**[Job Title]** | [Company Name] | [City, State] | [Start Date] – [End Date]
+*   [Accomplishment or responsibility.]
+*   [Accomplishment or responsibility.]
+*   [Accomplishment or responsibility.]
+
+Education
+---
+**[Name of Institution]** | [City, State]
+[Degree] in [Major] | [Graduation Date]
+*   Relevant Coursework: [List a few key courses]
+*   GPA: [Your GPA] (Optional)
+
+Skills
+---
+*   **Programming Languages:** [List languages]
+*   **Frameworks & Libraries:** [List frameworks and libraries]
+*   **Tools & Technologies:** [List tools and technologies]
+*   **Certifications:** [List any certifications]
+
+Projects
+---
+**[Project Name]** | [Link to Project or Repository]
+*   [Brief description of the project and your role.]
+*   [Highlight the technologies used and the skills you demonstrated.]
+
+[Project Name] | [Link to Project or Repository]
+*   [Brief description of the project and your role.]
+*   [Highlight the technologies used and the skills you demonstrated.]
+

@@ -35,7 +35,9 @@ Get up and running with the Resume & Cover Letter Agent in 5 minutes!
    # Replace the placeholder content with your actual resume
    ```
 
-## 🔑 Google Docs Setup (Optional but Recommended)
+## 🔑 Google Docs Setup (Optional)
+
+**Skip this section if you don't need Google Docs integration - the app works great without it!**
 
 1. **Create Google Cloud Project**:
 
@@ -50,13 +52,14 @@ Get up and running with the Resume & Cover Letter Agent in 5 minutes!
 
    - Go to "Credentials" → "Create Credentials" → "OAuth 2.0 Client ID"
    - Choose "Desktop application"
-   - Download the JSON file as `credentials.json`
+   - Download the JSON file and save it as `credentials.json` in your project root
 
-4. **Update configuration**:
+4. **Update configuration** (optional):
    ```bash
-   # In your .env file, add:
+   # In your .env file, add (only if using non-default filename):
    GOOGLE_CREDENTIALS_PATH=credentials.json
    ```
+   **Note**: If you name the file `credentials.json`, no configuration needed - it's the default!
 
 ## 🧪 Test Your Setup
 
@@ -104,10 +107,11 @@ python main.py --user-name "John Smith"
 
 - Edit `data/base_resume.txt` with your resume content
 
-**Google authentication fails**
+**Google authentication fails** (if using Google Docs integration)
 
 - Make sure you downloaded OAuth credentials (not service account)
-- The file should be named `credentials.json`
+- Save the file as `credentials.json` in your project root
+- **Remember**: Google Docs integration is optional - app works without it!
 
 ## 🎉 You're Ready!
 

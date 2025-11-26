@@ -6,17 +6,22 @@ A powerful Python CLI application that leverages LangChain and OpenAI's LLM to a
 
 - **Intelligent Resume Refinement**: Uses GPT-4 to tailor your resume to specific job descriptions
 - **Professional Cover Letter Generation**: Creates personalized cover letters that highlight relevant experience
-- **Google Docs Integration**: Automatically uploads refined resumes to Google Docs with shareable links
+- **Optional Google Docs Integration**: Automatically uploads refined resumes to Google Docs with shareable links (optional feature)
 - **CLI Interface**: Simple command-line interface for easy automation and scripting
 - **Comprehensive Error Handling**: Robust error handling with helpful user guidance
 - **Fast Processing**: Optimized for <30 second end-to-end processing time
 
 ## 📋 Requirements
 
+### Required
 - Python 3.9 or higher
-- OpenAI API key (GPT-4 Turbo or GPT-4o recommended)
+- OpenAI API key (GPT-4 Turbo or GPT-4o recommended for best results)
+
+### Optional (for Google Docs integration)
 - Google Cloud Project with Docs API enabled
 - Google OAuth 2.0 credentials
+
+**Note**: The app works perfectly without Google Docs integration - resumes and cover letters will be displayed in the terminal.
 
 ## 🛠 Installation
 
@@ -65,7 +70,9 @@ A powerful Python CLI application that leverages LangChain and OpenAI's LLM to a
 2. Create a new API key
 3. Add it to your `.env` file as `OPENAI_API_KEY`
 
-### Google Docs API
+### Google Docs API (Optional)
+
+**Skip this section if you don't need Google Docs integration - the app works without it!**
 
 1. Go to [Google Cloud Console](https://console.cloud.google.com/)
 2. Create a new project or select an existing one
@@ -73,8 +80,8 @@ A powerful Python CLI application that leverages LangChain and OpenAI's LLM to a
 4. Create OAuth 2.0 credentials:
    - Go to "Credentials" → "Create Credentials" → "OAuth 2.0 Client ID"
    - Choose "Desktop application"
-   - Download the JSON file
-5. Save the JSON file and update `GOOGLE_CREDENTIALS_PATH` in your `.env` file
+   - Download the JSON file and save it as `credentials.json` in your project root
+5. Update `GOOGLE_CREDENTIALS_PATH=credentials.json` in your `.env` file
 
 ## 📖 Usage
 
@@ -174,13 +181,15 @@ resume-agent/
 
 ### Environment Variables
 
-| Variable                  | Description                                | Required |
-| ------------------------- | ------------------------------------------ | -------- |
-| `OPENAI_API_KEY`          | Your OpenAI API key                        | Yes      |
-| `OPENAI_MODEL`            | OpenAI model to use (default: gpt-4-turbo) | No       |
-| `GOOGLE_CREDENTIALS_PATH` | Path to Google OAuth credentials JSON      | Yes      |
-| `GOOGLE_TOKEN_PATH`       | Path to store Google auth tokens           | No       |
-| `USER_NAME`               | Your full name for cover letters           | No       |
+| Variable                  | Description                                | Required | Default Value    |
+| ------------------------- | ------------------------------------------ | -------- | ---------------- |
+| `OPENAI_API_KEY`          | Your OpenAI API key                        | Yes      | -               |
+| `OPENAI_MODEL`            | OpenAI model to use                        | No       | gpt-4o-mini     |
+| `GOOGLE_CREDENTIALS_PATH` | Path to Google OAuth credentials JSON      | No*      | credentials.json |
+| `GOOGLE_TOKEN_PATH`       | Path to store Google auth tokens           | No       | token.json      |
+| `USER_NAME`               | Your full name for cover letters           | No       | User            |
+
+**\* Required only if you want Google Docs integration**
 
 ### Customization
 
@@ -197,10 +206,12 @@ resume-agent/
 - Ensure your `.env` file exists and contains `OPENAI_API_KEY`
 - Verify the API key is valid and has sufficient credits
 
-**"Google credentials file not found"**
+**"Google credentials file not found"** (if using Google Docs integration)
 
 - Download OAuth 2.0 credentials from Google Cloud Console
-- Update `GOOGLE_CREDENTIALS_PATH` in your `.env` file
+- Save the file as `credentials.json` in your project root
+- Or update `GOOGLE_CREDENTIALS_PATH` in your `.env` file with the correct path
+- **Note**: You can skip Google Docs setup entirely - the app works without it!
 
 **"Base resume file not found"**
 

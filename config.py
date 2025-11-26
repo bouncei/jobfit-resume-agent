@@ -15,9 +15,7 @@ class Config:
     OPENAI_MODEL = os.getenv('OPENAI_MODEL', 'gpt-4o-mini')
     
     # Google Docs Configuration
-    GOOGLE_CREDENTIALS_PATH = os.getenv('GOOGLE_CREDENTIALS_PATH', 
-                                      os.path.join(os.path.dirname(__file__), 'secrets', 
-                                                 'client_secret_614844878263-jmh6q87rgfoc3ksu4qs8v51itbot8va4.apps.googleusercontent.com.json'))
+    GOOGLE_CREDENTIALS_PATH = os.getenv('GOOGLE_CREDENTIALS_PATH', 'credentials.json')
     GOOGLE_TOKEN_PATH = os.getenv('GOOGLE_TOKEN_PATH', 
                                 os.path.join(os.path.dirname(__file__), 'token.json'))
     GOOGLE_SCOPES = ['https://www.googleapis.com/auth/documents']
